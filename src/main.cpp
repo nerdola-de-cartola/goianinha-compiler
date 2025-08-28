@@ -28,7 +28,6 @@ int main(int argc, char* argv[]) {
     SemanticAnalyzer* semantic_analyzer = new SemanticAnalyzer(*lexer);
     semantic_analyzer->compile();
     
-    
     // Cleanup
     file.close();
     delete lexer;

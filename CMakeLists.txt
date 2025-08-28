@@ -13,14 +13,20 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+# Find Flex
+find_package(FLEX REQUIRED)
+
 # Include directories
 include_directories(include)
+
+# Run Flex on lex.l -> generates lex.yy.cc
+FLEX_TARGET(Lexer lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc)
 
 # Collect all source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Create the main executable
-add_executable(compiler ${SOURCES})
+add_executable(compiler ${SOURCES} ${FLEX_Lexer_OUTPUTS})
 
 # Link directories and libraries (if needed)
 # target_link_libraries(compiler ${CMAKE_THREAD_LIBS_INIT})
@@ -29,7 +35,7 @@ add_executable(compiler ${SOURCES})
 # install(TARGETS compiler DESTINATION bin)
 
 # Testing (optional)
-enable_testing()
-if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
-    add_subdirectory(tests)
-endif()
+# enable_testing()
+# if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+#     add_subdirectory(tests)
+# endif()

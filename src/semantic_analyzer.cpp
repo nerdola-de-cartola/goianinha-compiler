@@ -10,5 +10,6 @@ SemanticAnalyzer::~SemanticAnalyzer() {
 }
 
 void SemanticAnalyzer::compile() {
-    std::cout << "Analyzing input: " << lexer.analyze() << std::endl;
+    std::cout << "Analyzing input\n";
+    lexer.analyze();
 }
