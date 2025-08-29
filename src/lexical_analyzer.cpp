@@ -44,7 +44,7 @@ std::string LexicalAnalyzer::analyze() {
 
         std::string text = tokenTypeToString(token_type);
 
-        std::cout << text << " na linha " << lexer.lineno() << "\n";
+        std::cout << text << " na linha " << lexer.lineno() << ": " << token_value << "\n";
 
         if (token_type == TOK_EOF) {
             return "";

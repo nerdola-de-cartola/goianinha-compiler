@@ -20,7 +20,7 @@ find_package(FLEX REQUIRED)
 include_directories(include)
 
 # Run Flex on lex.l -> generates lex.yy.cc
-FLEX_TARGET(Lexer lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc)
+FLEX_TARGET(Lexer src/lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc)
 
 # Collect all source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
