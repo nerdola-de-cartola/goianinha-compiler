@@ -4,6 +4,7 @@
 #include <fstream>
 #include "lexical_analyzer.hpp"
 #include "semantic_analyzer.hpp"
+#include "scope_stack.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "Compiler v1.0.0" << std::endl;
@@ -26,7 +27,35 @@ int main(int argc, char* argv[]) {
 
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
     SemanticAnalyzer* semantic_analyzer = new SemanticAnalyzer(*lexer);
-    semantic_analyzer->compile();
+    ScopeStack* scope_stack = new ScopeStack();
+    lexer->analyze(); // Test lexer
+    semantic_analyzer->compile(); // TODO: Test semantic analyzer
+
+    // Test scope stack
+    Function f1 = Function("funcao_basica", CAR);
+    Function f2 = Function("funcao_exemplo", CAR);
+    f2.add_parameter(Variable("x", INT));
+    Function f3 = Function("funcao_com_varios_parametros", INT);
+    f3.add_parameter(Variable("x", INT));
+    f3.add_parameter(Variable("y", CAR));
+    f3.add_parameter(Variable("z", INT));
+    f3.add_parameter(Variable("w", CAR));
+
+    scope_stack->push();
+    scope_stack->add_variable(Variable("a", INT));
+    scope_stack->add_variable(Variable("_b12", CAR));
+    scope_stack->add_function(f1);
+    scope_stack->add_function(f2);
+    scope_stack->add_function(f3);
+
+    scope_stack->push();
+    scope_stack->add_variable(Variable("a", INT));
+    scope_stack->add_variable(Variable("_b12", CAR));
+    scope_stack->add_function(f1);
+    scope_stack->add_function(f2);
+    scope_stack->add_function(f3);
+
+    std::cout << "\n" << scope_stack->toString() << "\n";
     
     // Cleanup
     file.close();

@@ -15,8 +15,11 @@ private:
     VariableTypes type;
 
 public:
-    Variable();
+    Variable(std::string name, VariableTypes type);
     ~Variable();
+    std::string get_name();
+    VariableTypes get_type();
+    std::string toString();
 };
 
 #endif // VARIABLE_HPP

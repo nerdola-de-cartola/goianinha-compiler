@@ -14,11 +14,13 @@ public:
     Scope();
     ~Scope();
     
-    void add_function();
-    void get_function();
+    void add_function(Function f);
+    Function* get_function(std::string name);
 
-    void add_variable();
-    void get_variable();
+    void add_variable(Variable var);
+    Variable* get_variable(std::string name);
+
+    std::string toString();
 };
 
 #endif // SCOPE_HPP
