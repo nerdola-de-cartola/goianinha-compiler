@@ -11,8 +11,8 @@ enum VariableTypes {
 
 class Variable {
 private:
-    std::string variable_name;
-    VariableTypes variable_type;
+    std::string name;
+    VariableTypes type;
 
 public:
     Variable();
