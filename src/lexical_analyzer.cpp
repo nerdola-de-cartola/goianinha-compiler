@@ -21,35 +21,33 @@ LexicalAnalyzer::~LexicalAnalyzer() {
     // Destructor implementation
 }
 
-std::tuple<TokenType, std::string>  LexicalAnalyzer::get_next_token() {
-    TokenType token_type;
-    std::string token_value;
+std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
+    TokenType token_type = (TokenType) this->lexer.yylex();
+    std::string token_value = std::string(yylval);
+    int token_line = this->lexer.lineno();
 
-    token_type = (TokenType) this->lexer.yylex();
-    token_value = std::string(yylval);
+    if (token_type == UNKNOWN) {
+        std::cout << "Erro na lina " << token_line << ". Token não identificado: " << token_value << "\n";
+    }
 
-
-    return {token_type, token_value};
+    return {token_type, token_value, token_line};
 }
 
 
-std::string LexicalAnalyzer::analyze() {
+void LexicalAnalyzer::analyze() {
     while (true) {
-        auto [token_type, token_value] = this->get_next_token();
+        auto [token_type, token_value, token_line] = this->get_next_token();
 
         if (token_type == UNKNOWN) {
-            std::cout << "Erro na lina " << this->lexer.lineno() << ". Token não identificado: " << token_value << "\n";
             continue;
         }
 
-        std::string text = tokenTypeToString(token_type);
-
-        std::cout << text << " na linha " << lexer.lineno() << ": " << token_value << "\n";
+        std::cout << tokenTypeToString(token_type) << " na linha " << token_line << ": " << token_value << "\n";
 
         if (token_type == TOK_EOF) {
-            return "";
+            return;
         }
     }
 
-    return "";
+    return;
 }

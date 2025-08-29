@@ -18,8 +18,8 @@ public:
     ~LexicalAnalyzer();
     
     // Method to analyze tokens from input
-    std::string analyze();
-    std::tuple<TokenType, std::string>  get_next_token();
+    void analyze();
+    std::tuple<TokenType, std::string, int>  get_next_token();
 };
 
 #endif // LEXICAL_ANALYZER_HPP
