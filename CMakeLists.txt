@@ -13,20 +13,28 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Find Flex
-find_package(FLEX REQUIRED)
+find_package(FLEX REQUIRED) # Find Flex
+find_package(BISON REQUIRED) # Find Bison
 
 # Include directories
 include_directories(include)
 
+# Gerar parser
+BISON_TARGET(Syntactic src/syntactic.y ${CMAKE_CURRENT_BINARY_DIR}/bison/syntactic.cpp
+             DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/bison/syntactic.hpp
+             COMPILE_FLAGS --defines=${CMAKE_CURRENT_BINARY_DIR}/bison/syntactic.hpp)
+
 # Run Flex on lex.l -> generates lex.yy.cc
-FLEX_TARGET(Lexer src/lex.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc)
+FLEX_TARGET(Lexer src/lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lex.yy.cc)
+
+ADD_FLEX_BISON_DEPENDENCY(Lexer Syntactic)
 
 # Collect all source files
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 # Create the main executable
-add_executable(compiler ${SOURCES} ${FLEX_Lexer_OUTPUTS})
+add_executable(compiler ${SOURCES} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
+target_include_directories(compiler PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
 
 # Link directories and libraries (if needed)
 # target_link_libraries(compiler ${CMAKE_THREAD_LIBS_INIT})

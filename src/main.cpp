@@ -5,6 +5,7 @@
 #include "lexical_analyzer.hpp"
 #include "semantic_analyzer.hpp"
 #include "scope_stack.hpp"
+#include "syntactic.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "Compiler v1.0.0" << std::endl;
@@ -28,6 +29,14 @@ int main(int argc, char* argv[]) {
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
     SemanticAnalyzer* semantic_analyzer = new SemanticAnalyzer(*lexer);
     ScopeStack* scope_stack = new ScopeStack();
+
+    // Test Test syntactic analyzer
+    yy::Parser parser(lexer);
+    //parser.set_debug_level(1); // enable debug printing
+    auto result = parser.parse();  // chama o parser, que por sua vez usa yylex()
+    std::cout << "Parser result: " << result << "\n";
+    exit(0);
+
     lexer->analyze(); // Test lexer
     semantic_analyzer->compile(); // TODO: Test semantic analyzer
 

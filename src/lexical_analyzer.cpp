@@ -5,6 +5,7 @@
 #include <sstream>
 #include "FlexLexer.h"
 #include "token_type.hpp"
+#include "syntactic.hpp"
 
 // extern yylval (declared in lex.l)
 extern std::string yylval;
@@ -34,7 +35,7 @@ std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
 }
 
 
-void LexicalAnalyzer::analyze() {
+void LexicalAnalyzer::analyze() {    
     while (true) {
         auto [token_type, token_value, token_line] = this->get_next_token();
 
@@ -50,4 +51,15 @@ void LexicalAnalyzer::analyze() {
     }
 
     return;
+}
+
+int yylex(std::string *lval, LexicalAnalyzer *lexer) {
+    auto [token_type, token_value, token_line] = lexer->get_next_token();
+    *lval = token_value;
+    return token_type;
+}
+
+
+void yy::Parser::error(const std::string &msg) {
+    std::cerr << "Syntax error: " << msg << std::endl;
 }

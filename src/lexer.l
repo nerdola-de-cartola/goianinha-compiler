@@ -1,5 +1,6 @@
 %option c++
 %option noyywrap
+
 %{
 #include <string>
 #include "token_type.hpp"
@@ -58,7 +59,7 @@ WHITESPACE      [\t\r' ']
 
 ([a-zA-Z]|"_"[a-zA-Z])[a-zA-Z0-9|"_"]*      { yylval = YYText(); return ID; }
 
-{DIGIT}+      { yylval = YYText(); return TOK_NUMBER; }
+{DIGIT}+      { yylval = YYText(); return CONST_INT; }
 {WHITESPACE}  { /* ignore white spaces */ }
 "\n"          { yylineno++; }   // conta linhas
 <<EOF>>       { return TOK_EOF; }

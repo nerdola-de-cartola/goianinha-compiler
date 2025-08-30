@@ -3,9 +3,8 @@
 
 std::string tokenTypeToString(TokenType t) {
     switch (t) {
-        case TOK_NUMBER:         return "TOK_NUMBER";
-        case TOK_WORD:           return "TOK_WORD";
-        case TOK_OTHER:          return "TOK_OTHER";
+        case CONST_INT:          return "CONST_INT";
+        case CONST_CAR:          return "CONST_CAR";
         case TOK_EOF:            return "TOK_EOF";
         case CMD_PROGRAMA:       return "CMD_PROGRAMA";
         case TYPE_INT:           return "TYPE_INT";

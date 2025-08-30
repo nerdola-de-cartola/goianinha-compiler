@@ -3,10 +3,9 @@
 #include <string>
 
 enum TokenType {
-    TOK_NUMBER = 256,
-    TOK_WORD,
-    TOK_OTHER,
-    TOK_EOF,
+    TOK_EOF = 0, // Especial value that bison expects as EOF
+    CONST_INT = 258, // For bison tokens nees to start at 258
+    CONST_CAR,
     CMD_PROGRAMA,
     TYPE_INT,
     TYPE_CAR,
