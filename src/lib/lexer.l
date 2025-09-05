@@ -12,7 +12,7 @@ int yylineno = 1;
 
 DIGIT           [0-9]
 LETTER          [a-zA-Z]
-ID              "_"[a-z][a-z0-9]*
+ID              ({LETTER}|"_"{LETTER})({LETTER}|"_"|{DIGIT})*
 WHITESPACE      [\t\r' ']
 
 %x comentario
@@ -74,7 +74,7 @@ WHITESPACE      [\t\r' ']
 <car_const>
 [^ ' \n ]*    { yylval = YYText(); return CONST_CAR; }
 
-([a-zA-Z]|"_"[a-zA-Z])[a-zA-Z0-9|"_"]*      { yylval = YYText(); return ID; }
+{ID}          { yylval = YYText(); return ID; }
 
 {DIGIT}+      { yylval = YYText(); return CONST_INT; }
 {WHITESPACE}  { /* ignore white spaces */ }
