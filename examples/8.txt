@@ -1,5 +1,10 @@
 int my_func , var1; programa {
     car a;
+    /*car a*/
+    /*int u = 8;*/
+    /*teste*/
     /**/
+    /*
+    */
     a='asd'
 }

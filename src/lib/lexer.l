@@ -57,9 +57,9 @@ WHITESPACE      [\t\r' ']
 "*"           { yylval = YYText(); return MULIPLICACAO; }
 "/"           { yylval = YYText(); return DIVISAO; }
 
-"/*"          { BEGIN(comentario); yylval = YYText(); return ABRE_COMENTARIO; }
+"/*"          { BEGIN(comentario); yylval = YYText(); }
 <comentario>
-"*/"          { BEGIN(INITIAL); yylval = YYText(); return FECHA_COMENTARIO; }
+"*/"          { BEGIN(INITIAL); yylval = YYText(); }
 <comentario>
 "\n"          { yylineno++; yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
 <comentario>

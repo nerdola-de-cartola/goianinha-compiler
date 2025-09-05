@@ -1,2 +1,5 @@
+/**/
 /* ola bnoai al 12 * + / */
-var_x
+/*
+*/
+int
