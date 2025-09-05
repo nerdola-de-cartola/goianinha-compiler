@@ -61,7 +61,7 @@ WHITESPACE      [\t\r' ']
 <comentario>
 "*/"          { BEGIN(INITIAL); yylval = YYText(); return FECHA_COMENTARIO; }
 <comentario>
-"\n"          { yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
+"\n"          { yylineno++; yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
 <comentario>
 .             { /* IGONORE COMENTS */ }
 
@@ -70,7 +70,7 @@ WHITESPACE      [\t\r' ']
 <car_const>
 "'"           { BEGIN(INITIAL); yylval = YYText(); return DELIMITA_CAR; }
 <car_const>
-"\n"          { yylval = YYText(); return QUEBRA_CAR; }   // comnetário quebrado
+"\n"          { yylineno++; yylval = YYText(); return QUEBRA_CAR; }   // comnetário quebrado
 <car_const>
 [^ ' \n ]*    { yylval = YYText(); return CONST_CAR; }
 
