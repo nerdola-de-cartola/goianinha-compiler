@@ -1,15 +1,21 @@
 %language "c++"
 %debug
+%locations
+%define parse.error detailed
 %define api.value.type {std::string}
 %define api.parser.class {Parser}
+%define api.location.type {yy::location}
 
 %code requires {
+
 #include <string>
 #include <iostream>
 #include "lexical_analyzer.hpp"
 #include "token_type.hpp"
+#include "syntactic.hpp"
+#include "location.hh"
 
-int yylex(std::string *lval, LexicalAnalyzer* lexer);
+int yylex(std::string *lval, yy::location *location, LexicalAnalyzer *lexer);
 
 }
 

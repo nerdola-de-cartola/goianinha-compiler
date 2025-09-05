@@ -62,13 +62,16 @@ void LexicalAnalyzer::analyze() {
     return;
 }
 
-int yylex(std::string *lval, LexicalAnalyzer *lexer) {
+int yylex(std::string *lval, yy::location *location, LexicalAnalyzer *lexer) {
     auto [token_type, token_value, token_line] = lexer->get_next_token();
+    location->begin.line   = token_line;
+    location->begin.column = token_value.length();
     *lval = token_value;
     return token_type;
 }
 
-
-void yy::Parser::error(const std::string &msg) {
-    std::cerr << "Syntax error: " << msg << std::endl;
+void yy::Parser::error(const location_type& loc, const std::string& msg) {
+    std::cerr << "Erro de sintaxe na linha "
+              << loc.begin.line << ", coluna " << loc.begin.column
+              << ": " << msg << std::endl;
 }

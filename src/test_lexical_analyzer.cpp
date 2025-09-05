@@ -3,7 +3,6 @@
 #include <vector>
 #include <fstream>
 #include "lexical_analyzer.hpp"
-#include "syntactic.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "Compiler v1.0.0" << std::endl;
@@ -25,10 +24,7 @@ int main(int argc, char* argv[]) {
     }
 
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
-    yy::Parser parser(lexer);
-    // parser.set_debug_level(1); // enable debug printing
-    auto result = parser.parse();  // chama o parser, que por sua vez usa yylex()
-    std::cout << "Parser result: " << result << "\n";
+    lexer->analyze(); // Test lexer
     
     // Cleanup
     file.close();
