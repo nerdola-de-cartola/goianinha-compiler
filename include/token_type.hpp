@@ -41,6 +41,9 @@ enum TokenType {
     ID,
     ABRE_COMENTARIO,
     FECHA_COMENTARIO,
+    QUEBRA_COMENTARIO,
+    DELIMITA_CAR,
+    QUEBRA_CAR,
     UNKNOWN,
 };
 

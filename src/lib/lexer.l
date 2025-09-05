@@ -15,6 +15,9 @@ LETTER          [a-zA-Z]
 ID              "_"[a-z][a-z0-9]*
 WHITESPACE      [\t\r' ']
 
+%x comentario
+%x car_const
+
 %%
 "programa"    { yylval = YYText(); return CMD_PROGRAMA; }
 "int"         { yylval = YYText(); return TYPE_INT; }    
@@ -54,14 +57,28 @@ WHITESPACE      [\t\r' ']
 "*"           { yylval = YYText(); return MULIPLICACAO; }
 "/"           { yylval = YYText(); return DIVISAO; }
 
-"/*"           { yylval = YYText(); return ABRE_COMENTARIO; }
-"*/"           { yylval = YYText(); return FECHA_COMENTARIO; }
+"/*"          { BEGIN(comentario); yylval = YYText(); return ABRE_COMENTARIO; }
+<comentario>
+"*/"          { BEGIN(INITIAL); yylval = YYText(); return FECHA_COMENTARIO; }
+<comentario>
+"\n"          { yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
+<comentario>
+.             { /* IGONORE COMENTS */ }
+
+
+"'"           { BEGIN(car_const); yylval = YYText(); return DELIMITA_CAR; }
+<car_const>
+"'"           { BEGIN(INITIAL); yylval = YYText(); return DELIMITA_CAR; }
+<car_const>
+"\n"          { yylval = YYText(); return QUEBRA_CAR; }   // comnetário quebrado
+<car_const>
+[^ ' \n ]*    { yylval = YYText(); return CONST_CAR; }
 
 ([a-zA-Z]|"_"[a-zA-Z])[a-zA-Z0-9|"_"]*      { yylval = YYText(); return ID; }
 
 {DIGIT}+      { yylval = YYText(); return CONST_INT; }
 {WHITESPACE}  { /* ignore white spaces */ }
 "\n"          { yylineno++; }   // conta linhas
-<<EOF>>       { return TOK_EOF; }
+<<EOF>>       { yylval = YYText(); return TOK_EOF; }
 .             { yylval = YYText(); return UNKNOWN; }
 %%

@@ -42,6 +42,9 @@ std::string tokenTypeToString(TokenType t) {
         case ID:                 return "ID";
         case ABRE_COMENTARIO:    return "ABRE_COMENTARIO";
         case FECHA_COMENTARIO:   return "FECHA_COMENTARIO";
+        case QUEBRA_COMENTARIO:  return "QUEBRA_COMENTARIO";
+        case DELIMITA_CAR:       return "DELIMITA_CAR";
+        case QUEBRA_CAR:         return "QUEBRA_CAR";
         default:                 return "VALOR NAO E TOKEN";
     }
 }

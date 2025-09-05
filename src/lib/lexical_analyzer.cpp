@@ -31,6 +31,15 @@ std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
         std::cout << "Erro na lina " << token_line << ". Token não identificado: " << token_value << "\n";
     }
 
+    if (token_type == QUEBRA_COMENTARIO) {
+        std::cout << "Erro na lina " << token_line << ". Comentário não termina: " << "\n";
+    }
+
+    if (token_type == QUEBRA_CAR) {
+        std::cout << "Erro na lina " << token_line << ". Cadeia de caracteres não termina: " << "\n";
+    }
+
+
     return {token_type, token_value, token_line};
 }
 
@@ -39,7 +48,7 @@ void LexicalAnalyzer::analyze() {
     while (true) {
         auto [token_type, token_value, token_line] = this->get_next_token();
 
-        if (token_type == UNKNOWN) {
+        if (token_type == UNKNOWN || token_type == QUEBRA_COMENTARIO || token_type == QUEBRA_CAR) {
             continue;
         }
 
