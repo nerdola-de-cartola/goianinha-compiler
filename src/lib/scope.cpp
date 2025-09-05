@@ -1,5 +1,6 @@
 #include "scope.hpp"
 #include <algorithm>
+#include <iostream>
 
 Scope::Scope() {}
 Scope::~Scope() {}
