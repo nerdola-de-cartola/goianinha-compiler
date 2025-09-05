@@ -1,1 +1,5 @@
-int my_func , var1; programa {}
+int my_func , var1; programa {
+    car a;
+    /**/
+    a='asd'
+}
