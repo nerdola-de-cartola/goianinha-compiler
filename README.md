@@ -1,81 +1,84 @@
-# Compiler Project
+# Projeto Compilador
 
-A C++ compiler framework for educational and development purposes.
+Um framework de compilador C++ para fins educacionais e de desenvolvimento.
 
-## Project Structure
+## Estrutura do Projeto
 
 ```
 compiler/
-├── CMakeLists.txt          # Build configuration
-├── README.md              # This file
-├── .gitignore             # Git ignore patterns
-├── src/                   # Source files
-│   └── main.cpp          # Main entry point
-├── include/              # Header files
-├── tests/               # Test files
-└── build/              # Build directory (generated)
+├── CMakeLists.txt                             # Configuração de build
+├── README.md                                  # Este arquivo
+├── .gitignore                                 # Padrões de ignore do Git
+├── src/                                       # Arquivos fonte
+|   └──lib/                                    # Código de biblioteca
+│   └── main.cpp                               # Ponto de entrada para teste do analizador sintático
+│   └── test_lexical_analyzer.cpp              # Ponto de entrada para teste do analizador lexico
+│   └── test_scope_stack.cpp                   # Ponto de entrada para teste da pilha de escopos
+├── include/                                   # Arquivos de cabeçalho
+├── examples/                                  # Arquivos de exemplo para entrada
+└── build/                                     # Diretório de build (gerado, arquivos do bison e do flex)
 ```
 
-## Prerequisites
+## Pré-requisitos
 
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
-- CMake 3.10 or higher
-- Make (or Ninja build system)
+- Compilador compatível com C++17 (GCC 7+, Clang 5+, MSVC 2017+)
+- CMake 3.10 ou superior
+- Make (ou sistema de build Ninja)
+- Flex
+- Bison
 
-## Building the Project
+## Compilando o Projeto
 
-1. Create a build directory and navigate to it:
+1. Crie um diretório de build e navegue até ele:
    ```bash
    cd compiler
    mkdir build
    cd build
+   mkdir bison
    ```
 
-2. Generate build files:
+2. Gere os arquivos de build:
    ```bash
    cmake ..
    ```
 
-3. Build the project:
+3. Compile o projeto:
    ```bash
    make
    ```
 
-Alternatively, you can build directly from the project root:
+Alternativamente, você pode compilar diretamente da raiz do projeto:
 ```bash
 cd compiler
 cmake -B build
 cmake --build build
 ```
 
-## Running
+## Executando
 
-After building, run the compiler:
+Após a compilação, execute os programas de teste:
 ```bash
-./build/compiler <input_file>
+./build/compiler examples/1.txt
+./build/test_lexical_analyzer examples/1.txt
+./build/test_scope_stack
 ```
 
-Example:
-```bash
-./build/compiler example.txt
-```
+## Desenvolvimento
 
-## Development
+O framework do compilador inclui os seguintes componentes principais (a serem implementados):
 
-The compiler framework includes the following main components (to be implemented):
+- **Análise Léxica**: Tokenização do código fonte
+- **Análise Sintática**: Análise da sintaxe e geração de AST  
+- **Análise Semântica**: Verificação de tipos e gerenciamento de tabela de símbolos
+- **Geração de Código**: Geração de código alvo
 
-- **Lexical Analysis**: Tokenization of source code
-- **Parsing**: Syntax analysis and AST generation  
-- **Semantic Analysis**: Type checking and symbol table management
-- **Code Generation**: Target code generation
+## Contribuindo
 
-## Contributing
+1. Adicione arquivos fonte ao diretório `src/`
+2. Adicione arquivos de cabeçalho ao diretório `include/`
+3. Adicione testes ao diretório `tests/`
+4. Atualize este README conforme necessário
 
-1. Add source files to the `src/` directory
-2. Add header files to the `include/` directory
-3. Add tests to the `tests/` directory
-4. Update this README as needed
+## Licença
 
-## License
-
-This project is for educational purposes.
+Este projeto é para fins educacionais.
