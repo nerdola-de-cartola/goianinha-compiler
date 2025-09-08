@@ -89,12 +89,7 @@ Comando:
 
 Expr:
     OrExpr
-    | ID ATRIBUICAO AssignExpr
-
-AssignExpr:
-    ID
-    | CONST_INT
-    | CarExpr
+    | ID ATRIBUICAO Expr
 
 OrExpr:
     OrExpr OU AndExpr
