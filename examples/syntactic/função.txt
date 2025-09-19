@@ -1,0 +1,8 @@
+int square(int n, car text){
+    escreva text;
+	retorne n * n;
+}
+
+programa {
+    square(12);
+}

@@ -1,0 +1,8 @@
+programa {
+    int n;
+    n = 0;
+
+    enquanto (n>=0) execute {
+        n = n + 1;
+    }	
+}

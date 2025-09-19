@@ -13,7 +13,7 @@ int yylineno = 1;
 DIGIT           [0-9]
 LETTER          [a-zA-Z]
 ID              ({LETTER}|"_"{LETTER})({LETTER}|"_"|{DIGIT})*
-WHITESPACE      [\t\r' ']
+WHITESPACE      [\t\r" "]
 
 %x comentario
 %x car_const
