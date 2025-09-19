@@ -4,9 +4,30 @@
 #include <fstream>
 #include "lexical_analyzer.hpp"
 
+#define red "\033[31m"
+#define default "\033[0m"
+
+bool isError(TokenType token_type, std::string token_value, int token_line) {
+    if (token_type == UNKNOWN) {
+        std::cout << red << "Erro na lina " << token_line << ". Token não identificado: " << token_value << default << "\n";
+        return true;
+    }
+
+    if (token_type == QUEBRA_COMENTARIO) {
+        std::cout << red << "Erro na lina " << token_line << ". Comentário não termina" << default << "\n";
+        return true;
+
+    }
+
+    if (token_type == QUEBRA_CAR) {
+        std::cout << red << "Erro na lina " << token_line << ". Cadeia de caracteres não termina" << default << "\n";
+        return true;
+    }
+
+    return false;
+}
+
 int main(int argc, char* argv[]) {
-    std::cout << "Compiler v1.0.0" << std::endl;
-    
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " <input_file>" << std::endl;
         std::cout << "A simple compiler framework" << std::endl;
@@ -24,12 +45,25 @@ int main(int argc, char* argv[]) {
     }
 
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
-    lexer->analyze(); // Test lexer
+    // lexer->analyze(); // Test lexer
+
+    while (true) {
+        auto [token_type, token_value, token_line] = lexer->get_next_token();
+
+        if (isError(token_type, token_value, token_line)) {
+            continue;
+        }
+
+        std::cout << tokenTypeToString(token_type) << " na linha " << token_line << ": " << token_value << "\n";
+
+        if (token_type == TOK_EOF) {
+            break;
+        }
+    }
     
     // Cleanup
     file.close();
     delete lexer;
     
-    std::cout << "Compilation completed successfully!" << std::endl;
     return 0;
 }

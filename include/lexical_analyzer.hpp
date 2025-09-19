@@ -17,8 +17,6 @@ public:
     LexicalAnalyzer(std::ifstream& file);
     ~LexicalAnalyzer();
     
-    // Method to analyze tokens from input
-    void analyze();
     std::tuple<TokenType, std::string, int>  get_next_token();
 };
 
