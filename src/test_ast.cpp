@@ -6,7 +6,7 @@
 #include "node.hpp"
 
 int main() {
-    std::cout << "Compiler v1.0.0" << std::endl;
+    std::cout << "Testing Abstract Syntax Tree" << std::endl;
     
     AbstractSyntaxTree ast = AbstractSyntaxTree();
     auto a = new Node(add_op, 
@@ -27,6 +27,5 @@ int main() {
 
     delete a;
     
-    std::cout << "Compilation completed successfully!" << std::endl;
     return 0;
 }

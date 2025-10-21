@@ -45,7 +45,6 @@ int main(int argc, char* argv[]) {
     }
 
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
-    // lexer->analyze(); // Test lexer
 
     while (true) {
         auto [token_type, token_value, token_line] = lexer->get_next_token();

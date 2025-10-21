@@ -69,6 +69,8 @@ int main() {
     std::cout << "\nAgora vamos apagar o escopo do topo e fazer a busca novamente\n";
     scope_stack->pop();
     full_test(*scope_stack);
+
+    delete scope_stack;
     
     std::cout << "\nFim do teste." << '\n';
     return 0;
