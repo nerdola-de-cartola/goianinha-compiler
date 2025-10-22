@@ -33,9 +33,8 @@ enum TypeNode {
     list_var,
     list_decl_var,
     block,
-    func,
-    func_params_block,
-    func_type_id,
+    func1,
+    func2,
     param,
     list_params,
     decl_func_var,
@@ -50,6 +49,7 @@ private:
     Node *left;
     Node *right;
     int value;
+    std::string lexeme;
 
 public:
     Node(TypeNode type, Node *left, Node *right, int value);
@@ -58,6 +58,8 @@ public:
     Node(TypeNode type, int value);
     Node(TypeNode type, std::string lexeme);
     Node(TypeNode type, Node *left, std::string lexeme);
+    Node(TypeNode type, Node *left, int value, std::string lexeme);
+    Node(TypeNode type, int value, std::string lexeme);
     ~Node();
 
     void traverse_prev();

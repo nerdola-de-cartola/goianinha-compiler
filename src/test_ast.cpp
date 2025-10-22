@@ -9,7 +9,7 @@ int main() {
     std::cout << "Testing Abstract Syntax Tree" << std::endl;
     
     AbstractSyntaxTree ast = AbstractSyntaxTree();
-    auto a = new Node(add_op, 
+    auto root = new Node(add_op, 
         new Node(number, 8),
         new Node(mul_op,
             new Node(number, 2),
@@ -23,9 +23,9 @@ int main() {
         )
     );
 
-    a->traverse_prev();
+    root->traverse_prev();
 
-    delete a;
+    delete root;
     
     return 0;
 }

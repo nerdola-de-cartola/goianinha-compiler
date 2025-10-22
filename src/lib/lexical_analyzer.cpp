@@ -40,12 +40,13 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     location->begin.line   = token_line;
     location->begin.column = token_value.length();
     
-    yy::Parser::value_type *a = (yy::Parser::value_type *) lval;
+    yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
 
     //std::cout << token_value << ' ' << token_type << '\n';
     
     if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
-        a->emplace<std::string>(token_value);
+        if (token_type == CONST_CAR) std::cout << token_value << ' ' << token_type << '\n';
+        vl->emplace<std::string>(token_value);
     }
 
     return token_type;

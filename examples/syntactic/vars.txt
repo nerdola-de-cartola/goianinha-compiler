@@ -1,4 +1,4 @@
 programa {
-    int n;
-    car c;
+    int i, j, k;
+    car m, n, o;
 }

@@ -15,14 +15,21 @@ Node::Node(TypeNode type, int value)
     : type(type), left(nullptr), right(nullptr), value(value) {}
 
 Node::Node(TypeNode type, std::string lexeme)
-    : type(type), left(nullptr), right(nullptr) {}
+    : type(type), left(nullptr), right(nullptr), lexeme(lexeme) {}
 
 Node::Node(TypeNode type, Node *left, std::string lexeme)
-    : type(type), left(left), right(nullptr) {}
+    : type(type), left(left), right(nullptr), lexeme(lexeme) {}
+
+Node::Node(TypeNode type, Node *left, int value, std::string lexeme)
+    : type(type), left(left), right(nullptr), value(value), lexeme(lexeme) {}
+
+Node::Node(TypeNode type, int value, std::string lexeme)
+    : type(type), left(nullptr), right(nullptr), value(value), lexeme(lexeme) {}
 
 Node::~Node() {
-    delete left;
-    delete right;
+    //std::cout << "deleting children" << '\n';
+    if (left != nullptr) delete left;
+    if (right != nullptr) delete right;
 }
 
 
@@ -126,9 +133,8 @@ std::string Node::toString() {
         case list_var: return "list_var";
         case list_decl_var: return "list_decl_var";
         case block: return "block";
-        case func: return "func";
-        case func_params_block: return "func_params_block";
-        case func_type_id: return "func_type_id";
+        case func1: return "func1";
+        case func2: return "func2";
         case param: return "param";
         case list_params: return "list_params";
         case decl_func_var: return "decl_func_var";

@@ -31,12 +31,15 @@ int main(int argc, char* argv[]) {
     std::cout << "Parser result: " << result << "\n";
 
     Node *root = lexer->get_ast();
-    root->printTree();
+    
+    if (root != nullptr) {
+        root->printTree();
+        delete root;
+    }
     
     // Cleanup
     file.close();
     delete lexer;
     
-    std::cout << "Compilation completed successfully!" << std::endl;
     return 0;
 }

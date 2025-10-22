@@ -1,0 +1,7 @@
+programa {
+    int n;
+    car c;
+
+    n = 1;
+    c = 'a';
+}

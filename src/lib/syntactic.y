@@ -31,7 +31,9 @@
 %token <Node *> NOVA_LINHA TYPE_INT TYPE_CAR
 %token CMD_PROGRAMA  CMD_RETORNE CMD_LEIA CMD_ESCREVA NOVA_LINHA CMD_SE CMD_ENTAO CMD_SE_NAO CMD_ENQUANTO CMD_EXECUTE ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE FECHA_CHAVE VIRGULA PONTO_VIRGULA ATRIBUICAO NEGACAO OU E IGUAL DIFERENTE MENOR_QUE MAIOR_QUE MAIOR_IGUAL_QUE MENOR_IGUAL_QUE SOMA SUBTRACAO MULIPLICACAO DIVISAO ABRE_COMENTARIO FECHA_COMENTARIO QUEBRA_COMENTARIO DELIMITA_CAR QUEBRA_CAR UNKNOWN
 %token <std::string> CONST_INT CONST_CAR ID
-%type <Node *> Programa DeclFuncVar DeclProg DeclVar DeclFunc ListaParametros ListaParametrosCont Bloco ListaDeclVar Tipo ListaComando Comando Expr OrExpr AndExpr EqExpr DesignExpr AddExpr MulExpr UnExpr CarExpr PrimExpr ListExpr
+
+%type <Node *> Programa DeclFuncVar DeclProg DeclVar DeclFunc ListaParametros ListaParametrosCont Bloco ListaDeclVar ListaComando Comando Expr OrExpr AndExpr EqExpr DesignExpr AddExpr MulExpr UnExpr CarExpr PrimExpr ListExpr
+%type <int> Tipo
 
 %start Programa
 
@@ -47,6 +49,7 @@ DeclFuncVar:
         $$ = new Node(decl_func_var, 
             new Node(list_var,
                 new Node(var, $2),
+                $3,
                 $1
             ),
             $5
@@ -54,9 +57,10 @@ DeclFuncVar:
     }
     | Tipo ID DeclFunc DeclFuncVar {
         $$ =  new Node(decl_func_var, 
-            new Node(func,
-                new Node(func_type_id, $1, $2),
-                $3
+            new Node(func1,
+                $3,
+                $1,
+                $2
             ),
             $4
         );
@@ -67,11 +71,11 @@ DeclProg:
     CMD_PROGRAMA Bloco {$$ = $2;}
 
 DeclVar:
-      VIRGULA ID DeclVar {$$ = new Node(block, new Node(var, $2), $3);}
+      VIRGULA ID DeclVar {$$ = new Node(var, $3, $2);}
     | Epsilon {$$ = nullptr;}
 
 DeclFunc:
-    ABRE_PARENTESES ListaParametros FECHA_PARENTESES Bloco {$$ = new Node(func_params_block, $2, $4);}
+    ABRE_PARENTESES ListaParametros FECHA_PARENTESES Bloco {$$ = new Node(func2, $2, $4);}
 
 ListaParametros:
       Epsilon {$$ = nullptr;}
@@ -93,13 +97,14 @@ ListaDeclVar:
                 new Node(var, $2),
                 new Node(list_var, $3)
             ),
+            $5,
             $1
         );
     }
 
 Tipo:
-     TYPE_INT {$$ = $1;}
-    | TYPE_CAR {$$ = $1;}
+     TYPE_INT {$$ = 0;}
+    | TYPE_CAR {$$ = 1;}
 
 ListaComando:
     Comando {$$ = $1;}
