@@ -9,6 +9,7 @@
 
 // extern yylval (declared in lex.l)
 extern std::string yylval;
+Node *root = nullptr;
 
 LexicalAnalyzer::LexicalAnalyzer(std::ifstream& file)
     : stream(), lexer(&stream)
@@ -22,6 +23,10 @@ LexicalAnalyzer::~LexicalAnalyzer() {
     // Destructor implementation
 }
 
+Node * LexicalAnalyzer::get_ast() {
+    return root;
+}
+
 std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
     TokenType token_type = (TokenType) this->lexer.yylex();
     std::string token_value = std::string(yylval);
@@ -30,11 +35,19 @@ std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
     return {token_type, token_value, token_line};
 }
 
-int yylex(std::string *lval, yy::location *location, LexicalAnalyzer *lexer) {
+int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     auto [token_type, token_value, token_line] = lexer->get_next_token();
     location->begin.line   = token_line;
     location->begin.column = token_value.length();
-    *lval = token_value;
+    
+    yy::Parser::value_type *a = (yy::Parser::value_type *) lval;
+
+    //std::cout << token_value << ' ' << token_type << '\n';
+    
+    if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
+        a->emplace<std::string>(token_value);
+    }
+
     return token_type;
 }
 

@@ -23,7 +23,7 @@ int main() {
         )
     );
 
-    a->traverse();
+    a->traverse_prev();
 
     delete a;
     

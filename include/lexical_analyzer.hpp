@@ -6,6 +6,7 @@
 #include <sstream>
 #include "token_type.hpp"
 #include "FlexLexer.h"
+#include "node.hpp"
 
 class LexicalAnalyzer {
 private:
@@ -18,6 +19,7 @@ public:
     ~LexicalAnalyzer();
     
     std::tuple<TokenType, std::string, int>  get_next_token();
+    Node * get_ast();
 };
 
 #endif // LEXICAL_ANALYZER_HPP

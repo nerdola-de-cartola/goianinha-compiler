@@ -29,6 +29,9 @@ int main(int argc, char* argv[]) {
     // parser.set_debug_level(1); // enable debug printing
     auto result = parser.parse();  // chama o parser, que por sua vez usa yylex()
     std::cout << "Parser result: " << result << "\n";
+
+    Node *root = lexer->get_ast();
+    root->printTree();
     
     // Cleanup
     file.close();

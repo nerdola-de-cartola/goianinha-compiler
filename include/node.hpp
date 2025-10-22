@@ -6,6 +6,7 @@
 enum TypeNode {
     id,
     number,
+    character,
     assign_op,
     negative_op,
     add_op,
@@ -21,7 +22,26 @@ enum TypeNode {
     ge_op,
     eq_op,
     dif_op,
-
+    command,
+    loop,
+    if_cond,
+    if_blocks,
+    write,
+    read,
+    return_cmd,
+    var,
+    list_var,
+    list_decl_var,
+    block,
+    func,
+    func_params_block,
+    func_type_id,
+    param,
+    list_params,
+    decl_func_var,
+    prog,
+    list_exp,
+    exp
 };
 
 class Node {
@@ -34,10 +54,16 @@ private:
 public:
     Node(TypeNode type, Node *left, Node *right, int value);
     Node(TypeNode type, Node *left, Node *right);
+    Node(TypeNode type, Node *left);
     Node(TypeNode type, int value);
+    Node(TypeNode type, std::string lexeme);
+    Node(TypeNode type, Node *left, std::string lexeme);
     ~Node();
 
-    void traverse();
+    void traverse_prev();
+    void traverse_in();
+    void traverse_pos();
+    void printTree(std::string prefix = "", bool isLeft = true);
     std::string toString();
 };
 

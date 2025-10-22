@@ -4,15 +4,13 @@
 
 enum TokenType {
     TOK_EOF = 0, // Especial value that bison expects as EOF
-    CONST_INT = 258, // For bison tokens nees to start at 258
-    CONST_CAR,
-    CMD_PROGRAMA,
+    NOVA_LINHA  = 258, // For bison tokens nees to start at 258
     TYPE_INT,
     TYPE_CAR,
+    CMD_PROGRAMA,
     CMD_RETORNE,
     CMD_LEIA,
     CMD_ESCREVA,
-    NOVA_LINHA,
     CMD_SE,
     CMD_ENTAO,
     CMD_SE_NAO,
@@ -38,13 +36,15 @@ enum TokenType {
     SUBTRACAO,
     MULIPLICACAO,
     DIVISAO,
-    ID,
     ABRE_COMENTARIO,
     FECHA_COMENTARIO,
     QUEBRA_COMENTARIO,
     DELIMITA_CAR,
     QUEBRA_CAR,
     UNKNOWN,
+    CONST_INT,
+    CONST_CAR,
+    ID
 };
 
 std::string tokenTypeToString(TokenType t);
