@@ -1,0 +1,10 @@
+programa {
+    int n;
+    leia n;
+
+	se (n==0)
+	entao
+		retorne n / n;
+	senao
+		retorne n * n;
+}

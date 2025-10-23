@@ -117,7 +117,7 @@ Comando:
     | CMD_RETORNE Expr PONTO_VIRGULA {$$ = new Node(return_cmd, $2);}
     | CMD_LEIA ID PONTO_VIRGULA {$$ = new Node(read, $2);}
     | CMD_ESCREVA Expr PONTO_VIRGULA {$$ = new Node(write, $2);}
-    | NOVA_LINHA PONTO_VIRGULA {$$ = $1;}
+    | NOVA_LINHA PONTO_VIRGULA {$$ = new Node(new_line);}
     | CMD_SE ABRE_PARENTESES Expr FECHA_PARENTESES CMD_ENTAO Comando {$$ = new Node(if_cond, $3, $6);}
     | CMD_SE ABRE_PARENTESES Expr FECHA_PARENTESES CMD_ENTAO Comando CMD_SE_NAO Comando {$$ = new Node(if_cond, $3, new Node(if_blocks, $6, $8));}
     | CMD_ENQUANTO ABRE_PARENTESES Expr FECHA_PARENTESES CMD_EXECUTE Comando {$$ = new Node(loop, $3, $6);}

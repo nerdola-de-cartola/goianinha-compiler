@@ -30,6 +30,7 @@ enum TypeNode {
     write,
     read,
     return_cmd,
+    new_line,
     var,
     list_var,
     list_decl_var,
@@ -54,6 +55,7 @@ private:
     std::string lexeme;
 
 public:
+    Node(TypeNode type);
     Node(TypeNode type, Node *left, Node *right, int value);
     Node(TypeNode type, Node *left, Node *right, VariableTypes var_type);
     Node(TypeNode type, Node *left, Node *right);

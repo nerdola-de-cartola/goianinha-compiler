@@ -31,9 +31,13 @@ int main(int argc, char* argv[]) {
     std::cout << "Parser result: " << result << "\n";
 
     Node *root = lexer->get_ast();
-    
+
     if (root != nullptr) {
         root->printTree();
+        //std::cout << std::endl;
+        //std::cout << std::endl;
+        //std::cout << std::endl;
+        //root->traverse_in();
         delete root;
     }
     

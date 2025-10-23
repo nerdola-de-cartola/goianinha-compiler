@@ -2,6 +2,10 @@
 #include "variable.hpp"
 #include <iostream>
 
+Node::Node(TypeNode type)
+    : type(type), left(nullptr), right(nullptr), value(nullptr), var_type(nullptr), lexeme("") {}
+
+
 Node::Node(TypeNode type, Node *left, Node *right, int value)
     : type(type), left(left), right(right), value(new int(value)), var_type(nullptr), lexeme("") {}
 
@@ -157,6 +161,7 @@ std::string Node::typeToString() {
         case write: return "write";
         case read: return "read";
         case return_cmd: return "return_cmd";
+        case new_line: return "new_line";
         case var: return "var";
         case list_var: return "list_var";
         case list_decl_var: return "list_decl_var";
