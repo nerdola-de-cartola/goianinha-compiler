@@ -5,7 +5,7 @@
 #include <string>
 
 enum VariableTypes {
-    INT,
+    INT = 152,
     CAR,
 };
 
@@ -20,6 +20,9 @@ public:
     std::string get_name();
     VariableTypes get_type();
     std::string toString();
+
+static std::string typeToString(VariableTypes type);
 };
+
 
 #endif // VARIABLE_HPP

@@ -45,7 +45,6 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     //std::cout << token_value << ' ' << token_type << '\n';
     
     if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
-        if (token_type == CONST_CAR) std::cout << token_value << ' ' << token_type << '\n';
         vl->emplace<std::string>(token_value);
     }
 

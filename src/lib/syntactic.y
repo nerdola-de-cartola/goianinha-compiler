@@ -14,6 +14,7 @@
     #include "token_type.hpp"
     #include "syntactic.hpp"
     #include "node.hpp"
+    #include "variable.hpp"
     #include "location.hh"
 
     int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer);
@@ -29,11 +30,11 @@
 %lex-param { LexicalAnalyzer* lexer }
 
 %token <Node *> NOVA_LINHA TYPE_INT TYPE_CAR
-%token CMD_PROGRAMA  CMD_RETORNE CMD_LEIA CMD_ESCREVA NOVA_LINHA CMD_SE CMD_ENTAO CMD_SE_NAO CMD_ENQUANTO CMD_EXECUTE ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE FECHA_CHAVE VIRGULA PONTO_VIRGULA ATRIBUICAO NEGACAO OU E IGUAL DIFERENTE MENOR_QUE MAIOR_QUE MAIOR_IGUAL_QUE MENOR_IGUAL_QUE SOMA SUBTRACAO MULIPLICACAO DIVISAO ABRE_COMENTARIO FECHA_COMENTARIO QUEBRA_COMENTARIO DELIMITA_CAR QUEBRA_CAR UNKNOWN
+%token CMD_PROGRAMA  CMD_RETORNE CMD_LEIA CMD_ESCREVA CMD_SE CMD_ENTAO CMD_SE_NAO CMD_ENQUANTO CMD_EXECUTE ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE FECHA_CHAVE VIRGULA PONTO_VIRGULA ATRIBUICAO NEGACAO OU E IGUAL DIFERENTE MENOR_QUE MAIOR_QUE MAIOR_IGUAL_QUE MENOR_IGUAL_QUE SOMA SUBTRACAO MULIPLICACAO DIVISAO ABRE_COMENTARIO FECHA_COMENTARIO QUEBRA_COMENTARIO DELIMITA_CAR QUEBRA_CAR UNKNOWN
 %token <std::string> CONST_INT CONST_CAR ID
 
 %type <Node *> Programa DeclFuncVar DeclProg DeclVar DeclFunc ListaParametros ListaParametrosCont Bloco ListaDeclVar ListaComando Comando Expr OrExpr AndExpr EqExpr DesignExpr AddExpr MulExpr UnExpr CarExpr PrimExpr ListExpr
-%type <int> Tipo
+%type <VariableTypes> Tipo
 
 %start Programa
 
@@ -103,8 +104,8 @@ ListaDeclVar:
     }
 
 Tipo:
-     TYPE_INT {$$ = 0;}
-    | TYPE_CAR {$$ = 1;}
+     TYPE_INT {$$ = INT;}
+    | TYPE_CAR {$$ = CAR;}
 
 ListaComando:
     Comando {$$ = $1;}

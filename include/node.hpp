@@ -1,6 +1,7 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
+#include <variable.hpp>
 #include <string>
 
 enum TypeNode {
@@ -48,18 +49,22 @@ private:
     TypeNode type;
     Node *left;
     Node *right;
-    int value;
+    int *value;
+    VariableTypes *var_type;
     std::string lexeme;
 
 public:
     Node(TypeNode type, Node *left, Node *right, int value);
+    Node(TypeNode type, Node *left, Node *right, VariableTypes var_type);
     Node(TypeNode type, Node *left, Node *right);
     Node(TypeNode type, Node *left);
     Node(TypeNode type, int value);
     Node(TypeNode type, std::string lexeme);
     Node(TypeNode type, Node *left, std::string lexeme);
     Node(TypeNode type, Node *left, int value, std::string lexeme);
+    Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme);
     Node(TypeNode type, int value, std::string lexeme);
+    Node(TypeNode type, VariableTypes var_type, std::string lexeme);
     ~Node();
 
     void traverse_prev();
@@ -67,6 +72,7 @@ public:
     void traverse_pos();
     void printTree(std::string prefix = "", bool isLeft = true);
     std::string toString();
+    std::string typeToString();
 };
 
 #endif // NODE_HPP

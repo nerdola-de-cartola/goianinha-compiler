@@ -1,33 +1,44 @@
 #include "node.hpp"
+#include "variable.hpp"
 #include <iostream>
 
-
 Node::Node(TypeNode type, Node *left, Node *right, int value)
-    : type(type), left(left), right(right), value(value) {}
+    : type(type), left(left), right(right), value(new int(value)), var_type(nullptr), lexeme("") {}
 
 Node::Node(TypeNode type, Node *left, Node *right)
-    : type(type), left(left), right(right) {}
+    : type(type), left(left), right(right), value(nullptr), var_type(nullptr), lexeme("") {}
 
 Node::Node(TypeNode type, Node *left)
-    : type(type), left(left), right(nullptr) {}
+    : type(type), left(left), right(nullptr), value(nullptr), var_type(nullptr), lexeme("") {}
 
 Node::Node(TypeNode type, int value)
-    : type(type), left(nullptr), right(nullptr), value(value) {}
+    : type(type), left(nullptr), right(nullptr), value(new int(value)), var_type(nullptr), lexeme("") {}
 
 Node::Node(TypeNode type, std::string lexeme)
-    : type(type), left(nullptr), right(nullptr), lexeme(lexeme) {}
+    : type(type), left(nullptr), right(nullptr), value(nullptr), var_type(nullptr), lexeme(lexeme) {}
 
 Node::Node(TypeNode type, Node *left, std::string lexeme)
-    : type(type), left(left), right(nullptr), lexeme(lexeme) {}
+    : type(type), left(left), right(nullptr), value(nullptr), var_type(nullptr), lexeme(lexeme) {}
 
 Node::Node(TypeNode type, Node *left, int value, std::string lexeme)
-    : type(type), left(left), right(nullptr), value(value), lexeme(lexeme) {}
+    : type(type), left(left), right(nullptr), value(new int(value)), var_type(nullptr), lexeme(lexeme) {}
 
 Node::Node(TypeNode type, int value, std::string lexeme)
-    : type(type), left(nullptr), right(nullptr), value(value), lexeme(lexeme) {}
+    : type(type), left(nullptr), right(nullptr), value(new int(value)), var_type(nullptr), lexeme(lexeme) {std::cout << "use\n";}
+
+Node:: Node(TypeNode type, Node *left, Node *right, VariableTypes var_type)
+    : type(type), left(left), right(right), value(nullptr), var_type(new VariableTypes(var_type)), lexeme("") {}
+
+Node:: Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme)
+    : type(type), left(left), right(nullptr), value(nullptr), var_type(new VariableTypes(var_type)), lexeme(lexeme) {}
+
+Node:: Node(TypeNode type, VariableTypes var_type, std::string lexeme)
+    : type(type), left(nullptr), right(nullptr), value(nullptr), var_type(new VariableTypes(var_type)), lexeme(lexeme) {}
 
 Node::~Node() {
     //std::cout << "deleting children" << '\n';
+    if(value != nullptr) delete value;
+    if(var_type != nullptr) delete var_type;
     if (left != nullptr) delete left;
     if (right != nullptr) delete right;
 }
@@ -101,8 +112,25 @@ void Node::printTree(std::string prefix, bool isLeft) {
     }
 }
 
-
 std::string Node::toString() {
+    std::string tstr = typeToString();
+    bool has_value = value != nullptr;
+    bool has_type = var_type != nullptr;
+    bool has_lexeme = lexeme != "";
+
+    if (has_value && has_type && has_lexeme) return tstr + '(' + Variable::typeToString(*var_type) + ", " + std::to_string(*value) + ", " + lexeme + ')';
+    if (has_value && has_type) return tstr + '(' + Variable::typeToString(*var_type) + ", " + std::to_string(*value) + ')';
+    if (has_value && has_lexeme) return tstr + '(' + Variable::typeToString(*var_type) + ", " + lexeme + ')';
+    if (has_type && has_lexeme) return tstr + '(' + std::to_string(*value) + ", " + lexeme + ')';
+    if (has_value) return tstr + '(' +  std::to_string(*value) + ')';
+    if (has_type) return tstr + '(' + Variable::typeToString(*var_type) + ')';
+    if (has_lexeme) return tstr + '(' + lexeme + ')';
+
+    return tstr;
+}
+
+
+std::string Node::typeToString() {
     switch (type) {
         case id: return "id";
         case number: return "number";

@@ -14,6 +14,9 @@ VariableTypes Variable::get_type() {
 }
 
 std::string Variable::toString() {
-    std::string t = type == INT ? "int" : "car";
-    return t + " " + name;
+    return typeToString(type) + " " + name;
+}
+
+std::string Variable::typeToString(VariableTypes type) {
+    return type == INT ? "int" : "car";
 }
