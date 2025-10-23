@@ -1,0 +1,10 @@
+int X, Y, Z;
+car A, B, C;
+
+programa {
+    int i, j;
+    car u, v;
+
+    X = 42;
+    A = "blablalba oi";
+}

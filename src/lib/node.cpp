@@ -120,8 +120,8 @@ std::string Node::toString() {
 
     if (has_value && has_type && has_lexeme) return tstr + '(' + Variable::typeToString(*var_type) + ", " + std::to_string(*value) + ", " + lexeme + ')';
     if (has_value && has_type) return tstr + '(' + Variable::typeToString(*var_type) + ", " + std::to_string(*value) + ')';
-    if (has_value && has_lexeme) return tstr + '(' + Variable::typeToString(*var_type) + ", " + lexeme + ')';
-    if (has_type && has_lexeme) return tstr + '(' + std::to_string(*value) + ", " + lexeme + ')';
+    if (has_value && has_lexeme) return tstr + '(' + std::to_string(*value) + ", " + lexeme + ')';
+    if (has_type && has_lexeme) return tstr + '(' + Variable::typeToString(*var_type) + ", " + lexeme + ')';
     if (has_value) return tstr + '(' +  std::to_string(*value) + ')';
     if (has_type) return tstr + '(' + Variable::typeToString(*var_type) + ')';
     if (has_lexeme) return tstr + '(' + lexeme + ')';

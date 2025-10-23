@@ -1,0 +1,8 @@
+int square(int n, car message, int size){
+	retorne n * n;
+}
+
+programa {
+    int n;
+    square(12, "OLa meu povo", n);
+}

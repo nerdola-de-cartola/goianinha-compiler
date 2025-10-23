@@ -166,7 +166,7 @@ CarExpr:
     DELIMITA_CAR CONST_CAR DELIMITA_CAR {$$ = new Node(character, $2);}
 
 PrimExpr:
-    ID ABRE_PARENTESES ListExpr FECHA_PARENTESES {$$ = new Node(exp, $1);} //TODO VERIFY 
+    ID ABRE_PARENTESES ListExpr FECHA_PARENTESES {$$ = new Node(exp, $3, $1);} //TODO VERIFY 
     | ID ABRE_PARENTESES FECHA_PARENTESES {$$ = new Node(exp, $1);}
     | ID {$$ = new Node(exp, $1);}
     | CarExpr {$$ = $1;}
