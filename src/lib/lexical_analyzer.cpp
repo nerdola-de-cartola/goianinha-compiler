@@ -19,7 +19,10 @@ LexicalAnalyzer::LexicalAnalyzer(std::ifstream& file)
     stream.str(content);
 }
 
-LexicalAnalyzer::~LexicalAnalyzer() {}
+LexicalAnalyzer::~LexicalAnalyzer() {
+    if (root != nullptr) delete root;
+    root = nullptr;
+}
 
 Node * LexicalAnalyzer::get_ast() {
     return root;
