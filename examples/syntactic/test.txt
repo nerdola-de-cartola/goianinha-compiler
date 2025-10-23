@@ -1,7 +1,0 @@
-programa {
-	enquanto (n<0) execute {
-		novalinha;
-	}	
-
-	escreva "O fatorial de ";
-}

@@ -1,10 +1,9 @@
 %language "c++"
-%debug
 %locations
+%debug
 %define parse.error detailed
 %define api.value.type variant
 %define api.parser.class {Parser}
-%define api.location.type {yy::location}
 
 %code requires {
     #include <string>

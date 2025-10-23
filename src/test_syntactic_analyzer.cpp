@@ -3,13 +3,11 @@
 #include <vector>
 #include <fstream>
 #include "lexical_analyzer.hpp"
+#include "syntactic_analyzer.hpp"
 
 int main(int argc, char* argv[]) {
-    std::cout << "Compiler v1.0.0" << std::endl;
-    
     if (argc < 2) {
         std::cout << "Usage: " << argv[0] << " <input_file>" << std::endl;
-        std::cout << "A simple compiler framework" << std::endl;
         return 1;
     }
     
@@ -24,6 +22,9 @@ int main(int argc, char* argv[]) {
     }
 
     LexicalAnalyzer *lexer = new LexicalAnalyzer(file);
+    SyntacticAnalyzer syn = SyntacticAnalyzer(lexer);
+    syn.parse();
+    syn.printTree();
 
     // Cleanup
     file.close();

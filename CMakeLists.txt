@@ -35,12 +35,18 @@ file(GLOB_RECURSE LIBS "src/lib/*.cpp")
 # Create the main executable
 add_executable(compiler src/main.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
 target_include_directories(compiler PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
+
 add_executable(test_lexical_analyzer src/test_lexical_analyzer.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
 target_include_directories(test_lexical_analyzer PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
+
 add_executable(test_scope_stack src/test_scope_stack.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
 target_include_directories(test_scope_stack PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
+
 add_executable(test_ast src/test_ast.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
 target_include_directories(test_ast PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
+
+add_executable(test_syntactic_analyzer src/test_syntactic_analyzer.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
+target_include_directories(test_syntactic_analyzer PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
 
 # Link directories and libraries (if needed)
 # target_link_libraries(compiler ${CMAKE_THREAD_LIBS_INIT})

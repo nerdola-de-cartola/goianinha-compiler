@@ -19,9 +19,7 @@ LexicalAnalyzer::LexicalAnalyzer(std::ifstream& file)
     stream.str(content);
 }
 
-LexicalAnalyzer::~LexicalAnalyzer() {
-    // Destructor implementation
-}
+LexicalAnalyzer::~LexicalAnalyzer() {}
 
 Node * LexicalAnalyzer::get_ast() {
     return root;
@@ -42,10 +40,8 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     
     yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
 
-    //std::cout << token_value << ' ' << token_type << '\n';
-    
     if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
-        vl->emplace<std::string>(token_value);
+        vl->emplace<std::string>(token_value); // Provides token_value to Bison
     }
 
     return token_type;

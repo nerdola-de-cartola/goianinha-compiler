@@ -1,0 +1,12 @@
+int f(int n){
+	retorne n+n;
+}
+
+programa {
+	int x, y, z;
+	
+	x = -x + y - z * (15 / 3);
+	y = x == ( z <= (15 > 3) ou (x < 2) e (z >= y) e y != 0 ou f(12));
+	z = x ou y e z ou !x
+
+}

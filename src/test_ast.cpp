@@ -2,13 +2,11 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "abstract_syntax_tree.hpp"
 #include "node.hpp"
 
 int main() {
     std::cout << "Testing Abstract Syntax Tree" << std::endl;
     
-    AbstractSyntaxTree ast = AbstractSyntaxTree();
     auto root = new Node(add_op, 
         new Node(number, 8),
         new Node(mul_op,
