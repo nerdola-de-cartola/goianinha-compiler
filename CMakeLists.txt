@@ -48,6 +48,9 @@ target_include_directories(test_ast PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
 add_executable(test_syntactic_analyzer src/test_syntactic_analyzer.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
 target_include_directories(test_syntactic_analyzer PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
 
+add_executable(test_semantic_analyzer src/test_semantic_analyzer.cpp ${LIBS} ${BISON_Syntactic_OUTPUTS} ${FLEX_Lexer_OUTPUTS})
+target_include_directories(test_semantic_analyzer PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/bison/)
+
 # Link directories and libraries (if needed)
 # target_link_libraries(compiler ${CMAKE_THREAD_LIBS_INIT})
 

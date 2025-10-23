@@ -54,4 +54,6 @@ void yy::Parser::error(const location_type& loc, const std::string& msg) {
     std::cerr << "Erro de sintaxe na linha "
               << loc.begin.line << ", coluna " << loc.begin.column
               << ": " << msg << std::endl;
+
+    exit(1);
 }

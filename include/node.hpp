@@ -46,7 +46,7 @@ enum TypeNode {
 };
 
 class Node {
-private:
+public:
     TypeNode type;
     Node *left;
     Node *right;

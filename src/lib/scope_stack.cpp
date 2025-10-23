@@ -32,6 +32,10 @@ Function* ScopeStack::get_function(std::string name) {
 }
 
 void ScopeStack::add_variable(Variable var) {
+    if (this->scopes.empty()) {
+        std::cout << "ERROR\n";
+        exit(1);
+    }
     this->scopes.back().add_variable(var);
 }
 

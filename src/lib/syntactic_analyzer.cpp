@@ -10,7 +10,6 @@ void SyntacticAnalyzer::parse() {
     root = lexer->get_ast();
     if (root != nullptr) delete root;
 
-    std::cout << "oi\n";
     parser.parse();
 }
 

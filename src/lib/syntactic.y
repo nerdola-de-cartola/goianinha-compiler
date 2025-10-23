@@ -4,6 +4,8 @@
 %define parse.error detailed
 %define api.value.type variant
 %define api.parser.class {Parser}
+%destructor { } <Node*>
+%destructor { } <std::string>
 
 %code requires {
     #include <string>
@@ -162,14 +164,14 @@ UnExpr:
     | PrimExpr {$$ = $1;}
 
 CarExpr:
-    DELIMITA_CAR CONST_CAR DELIMITA_CAR {$$ = new Node(character, $2);}
+    DELIMITA_CAR CONST_CAR DELIMITA_CAR {$$ = new Node(character, CAR, $2);}
 
 PrimExpr:
     ID ABRE_PARENTESES ListExpr FECHA_PARENTESES {$$ = new Node(exp, $3, $1);} //TODO VERIFY 
     | ID ABRE_PARENTESES FECHA_PARENTESES {$$ = new Node(exp, $1);}
     | ID {$$ = new Node(exp, $1);}
     | CarExpr {$$ = $1;}
-    | CONST_INT {$$ = new Node(number, std::stoi($1));}
+    | CONST_INT {$$ = new Node(number, INT, $1);}
     | ABRE_PARENTESES Expr FECHA_PARENTESES {$$ = $2;}
 
 ListExpr:
