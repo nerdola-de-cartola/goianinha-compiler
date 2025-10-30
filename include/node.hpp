@@ -8,6 +8,7 @@ enum TypeNode {
     id,
     number,
     character,
+    const_string,
     assign_op,
     negative_op,
     add_op,

@@ -5,6 +5,7 @@ std::string tokenTypeToString(TokenType t) {
     switch (t) {
         case CONST_INT:          return "CONST_INT";
         case CONST_CAR:          return "CONST_CAR";
+        case CONST_STR:          return "CONST_STR";
         case TOK_EOF:            return "TOK_EOF";
         case CMD_PROGRAMA:       return "CMD_PROGRAMA";
         case TYPE_INT:           return "TYPE_INT";
@@ -43,8 +44,10 @@ std::string tokenTypeToString(TokenType t) {
         case ABRE_COMENTARIO:    return "ABRE_COMENTARIO";
         case FECHA_COMENTARIO:   return "FECHA_COMENTARIO";
         case QUEBRA_COMENTARIO:  return "QUEBRA_COMENTARIO";
-        case DELIMITA_CAR:       return "DELIMITA_CAR";
+        case ASPAS_SIMPLES:      return "ASPAS_SIMPLES";
+        case ASPAS_DUPLAS:       return "ASPAS_DUPLAS";
         case QUEBRA_CAR:         return "QUEBRA_CAR";
-        default:                 return "VALOR NAO E TOKEN";
     }
+
+    return "";
 }

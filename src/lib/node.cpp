@@ -139,6 +139,7 @@ std::string Node::typeToString() {
         case id: return "id";
         case number: return "number";
         case character: return "character";
+        case const_string: return "const_string";
         case assign_op: return "assign_op";
         case negative_op: return "negative_op";
         case add_op: return "add_op";

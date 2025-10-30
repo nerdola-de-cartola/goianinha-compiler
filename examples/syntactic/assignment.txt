@@ -3,5 +3,5 @@ programa {
     car c;
 
     n = 47;
-    c = "blablalba oi";
+    c = 'x';
 }

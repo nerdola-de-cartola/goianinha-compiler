@@ -8,6 +8,7 @@ enum VariableTypes {
     TNULL = 0,
     INT = 152,
     CAR,
+    STR
 };
 
 class Variable {

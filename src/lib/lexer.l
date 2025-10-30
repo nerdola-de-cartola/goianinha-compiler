@@ -17,6 +17,7 @@ WHITESPACE      [\t\r" "]
 
 %x comentario
 %x car_const
+%x str_const
 
 %%
 "programa"                          { yylval = YYText(); return CMD_PROGRAMA; }
@@ -63,10 +64,15 @@ WHITESPACE      [\t\r" "]
 <comentario>.                       { /* IGONORE COMENTS */ }
 
 
-\"                                  { BEGIN(car_const); yylval = YYText(); return DELIMITA_CAR; }
-<car_const>\"                       { BEGIN(INITIAL); yylval = YYText(); return DELIMITA_CAR; }
+\'                                  { BEGIN(car_const); yylval = YYText(); return ASPAS_SIMPLES; }
+<car_const>\'                       { BEGIN(INITIAL); yylval = YYText(); return ASPAS_SIMPLES; }
 <car_const>"\n"                     { BEGIN(INITIAL); yylineno++; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
-<car_const>[^'"\n]+                 { yylval = YYText(); return CONST_CAR; }
+<car_const>[^''\n]                  { yylval = YYText(); return CONST_CAR; }
+
+\"                                  { BEGIN(str_const); yylval = YYText(); return ASPAS_DUPLAS; }
+<str_const>\"                       { BEGIN(INITIAL); yylval = YYText(); return ASPAS_DUPLAS; }
+<str_const>"\n"                     { BEGIN(INITIAL); yylineno++; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
+<str_const>[^'"\n]+                 { yylval = YYText(); return CONST_STR; }
 
 {ID}                                { yylval = YYText(); return ID; }
 
