@@ -1,0 +1,10 @@
+int i, i;
+
+car f(int i, car j) {}
+
+int fw() {}
+
+programa {
+    int i;
+    car j;
+}

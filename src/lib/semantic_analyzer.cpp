@@ -1,10 +1,13 @@
 #include "semantic_analyzer.hpp"
 #include "scope_stack.hpp"
-#include <iostream>
 #include "error.hpp"
+#include "variable.hpp"
+#include <iostream>
 
 auto default_pos = yy::position(nullptr, 42, 49);
 auto default_loc = yy::Parser::location_type(default_pos);
+
+void transverse(Node *node, ScopeStack *stack);
 
 SemanticAnalyzer::SemanticAnalyzer(LexicalAnalyzer &lexer) 
     : lexer(lexer), syn(SyntacticAnalyzer(&lexer)) {}
@@ -15,7 +18,7 @@ Variable *get_var(Node *node, ScopeStack *stack) {
     Variable *var = stack->get_variable(node->lexeme);
     
     if(var == nullptr) {
-        show_error(semantc, default_loc, std::string("undeclared variable"));
+        show_error(semantc, default_loc, "undeclared variable " + node->lexeme);
     }
 
     return var;
@@ -34,7 +37,12 @@ Function *get_func(Node *node, ScopeStack *stack) {
 void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node == nullptr) return;
 
+    if(node->type == list_decl_var) {
+        type = *node->var_type;
+    }
+
     if(node->type == var) {
+        //std::cout << type << " " << node->lexeme << std::endl;
         Result r = stack->add_variable(Variable(node->lexeme, type));
         if(r == ERROR) show_error(semantc, default_loc, "repeated variable name " + node->lexeme + " in block");
         return;
@@ -44,21 +52,29 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     transverse_decl_var(node->right, stack, type);
 }
 
-void transverse_expr(Node *node, ScopeStack *stack, VariableTypes type) {
+VariableTypes get_node_type(Node *node, ScopeStack *stack) {
+    VariableTypes type = TNULL;
+    if(node->var_type != nullptr) type = *node->var_type;
+    if(node->type == var) type = get_var(node, stack)->get_type();
+    if(node->type == func_call) type = get_func(node, stack)->get_return_type();
+    return type;
+}
+
+void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type) {
     if(node == nullptr) return;
     
-    transverse_expr(node->left, stack, type);
-    transverse_expr(node->right, stack, type);
+    transverse_expr(node->left, stack, expected_type);
+    transverse_expr(node->right, stack, expected_type);
     
-    VariableTypes t = TNULL;
-    if(node->var_type != nullptr) t = *node->var_type;
-    if(node->type == var) t = get_var(node, stack)->get_type();
-    if(node->type == func_call) t = get_func(node, stack)->get_return_type();
+    VariableTypes current_type = get_node_type(node, stack);
 
-    //std::cout << t << std::endl;
+    if(current_type == TNULL) return;
 
-    if(t == TNULL) return;
-    if(t != type) return show_error(semantc, default_loc, std::string("wrong type"));
+    if(current_type != expected_type) return show_error(
+        semantc,
+        default_loc,
+        "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type)
+    );
 }
 
 void add_all_parameters(Node *node, Function &f) {
@@ -74,45 +90,47 @@ void add_all_parameters(Node *node, Function &f) {
     add_all_parameters(node->right, f);
 }
 
+//std::cout << "oi" << std::endl;
+//std::cout << "ola" << std::endl;
+
+void transverse_function_declaration(Node *node, ScopeStack *stack) {
+    auto f1 = node;
+    auto f2 = node->left;
+    auto list_params = f2->left;
+    auto f = Function(f1->lexeme, *f1->var_type);
+    add_all_parameters(list_params, f);
+    Result r = stack->add_function(f);
+    if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name());
+    return transverse(f2->right, stack);
+}
+
+void transverse_block(Node *node, ScopeStack *stack) {
+    stack->push();
+    //std::cout << std::endl << stack->toString() << std::endl;
+    transverse(node->left, stack);
+    transverse(node->right, stack);
+    stack->pop();
+    //std::cout << std::endl << stack->toString() << std::endl;
+    return;
+}
+
+void transverse_assign_op(Node *node, ScopeStack *stack) {
+    auto var = get_var(node, stack);
+    return transverse_expr(node->left, stack, var->get_type());
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
-    if(node->type == block) {
-        stack->push();
-    }
-
-    if(node->type == list_decl_var) {
-        transverse_decl_var(node->left, stack, *node->var_type);
-    }
-
-    if(node->type == func1) {
-        std::cout << "oi" << std::endl;
-        auto f1 = node;
-        auto f2 = node->left;
-        auto list_params = f2->left;
-        auto f = Function(f1->lexeme, *f1->var_type);
-        add_all_parameters(list_params, f);
-        std::cout << "ola" << std::endl;
-        Result r = stack->add_function(f);
-        if(r == ERROR) show_error(semantc, default_loc, "repeated function name" + f.get_name());
-    }
+    if (node->type == block) return transverse_block(node, stack);
+    if (node->type == list_decl_var) return transverse_decl_var(node, stack, *node->var_type);
+    if (node->type == func1) return transverse_function_declaration(node, stack);
+    if (node->type == assign_op) return transverse_assign_op(node, stack);
+    if (node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op)
+        return transverse_expr(node, stack, INT);
 
     transverse(node->left, stack);
     transverse(node->right, stack);
-
-    if(node->type == block) {
-        //stack->pop();
-        return;
-    }
-
-    if (node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op) {
-        transverse_expr(node, stack, INT);
-    }
-    
-    if(node->type == assign_op) {
-        auto var = get_var(node, stack);
-        transverse_expr(node->left, stack, var->get_type());
-    }
 }
 
 void SemanticAnalyzer::analyze() {
@@ -127,6 +145,6 @@ void SemanticAnalyzer::analyze() {
     stack.push(); // Global scope
 
     transverse(root, &stack);
-    std::cout << stack.toString() << std::endl;
+    //std::cout << stack.toString() << std::endl;
 }
 
