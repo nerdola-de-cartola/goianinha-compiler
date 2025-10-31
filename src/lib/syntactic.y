@@ -170,9 +170,9 @@ CarExpr:
     ASPAS_SIMPLES CONST_CAR ASPAS_SIMPLES {$$ = new Node(character, CAR, $2);}
 
 PrimExpr:
-    ID ABRE_PARENTESES ListExpr FECHA_PARENTESES {$$ = new Node(exp, $3, $1);} //TODO VERIFY 
-    | ID ABRE_PARENTESES FECHA_PARENTESES {$$ = new Node(exp, $1);}
-    | ID {$$ = new Node(exp, $1);}
+    ID ABRE_PARENTESES ListExpr FECHA_PARENTESES {$$ = new Node(func_call, $3, $1);} //TODO VERIFY 
+    | ID ABRE_PARENTESES FECHA_PARENTESES {$$ = new Node(func_call, $1);}
+    | ID {$$ = new Node(var, $1);}
     | CarExpr {$$ = $1;}
     | CONST_INT {$$ = new Node(number, INT, $1);}
     | ABRE_PARENTESES Expr FECHA_PARENTESES {$$ = $2;}

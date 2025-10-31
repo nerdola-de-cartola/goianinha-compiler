@@ -1,0 +1,5 @@
+programa {
+    int i;
+    car c;
+    i - 2 * 3 + 4 / (12 - c);
+}

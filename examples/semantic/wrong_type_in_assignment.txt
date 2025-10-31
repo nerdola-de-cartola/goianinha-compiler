@@ -1,0 +1,4 @@
+programa {
+    int i;
+    i = 'a';
+}

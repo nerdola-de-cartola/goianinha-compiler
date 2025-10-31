@@ -171,10 +171,10 @@ std::string Node::typeToString() {
         case func2: return "func2";
         case param: return "param";
         case list_params: return "list_params";
+        case func_call: return "func_call";
         case decl_func_var: return "decl_func_var";
         case prog: return "prog";
         case list_exp: return "list_exp";
-        case exp: return "exp";
     }
 
     return "";

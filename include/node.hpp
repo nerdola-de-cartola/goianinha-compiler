@@ -40,10 +40,10 @@ enum TypeNode {
     func2,
     param,
     list_params,
+    func_call,
     decl_func_var,
     prog,
     list_exp,
-    exp
 };
 
 class Node {
