@@ -6,6 +6,7 @@
 #include "FlexLexer.h"
 #include "token_type.hpp"
 #include "syntactic.hpp"
+#include "error.hpp"
 
 // extern yylval (declared in lex.l)
 extern std::string yylval;
@@ -41,9 +42,25 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     location->begin.line   = token_line;
     location->begin.column = token_value.length();
     
-    yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
+    if(token_type == UNKNOWN) {
+        show_error(lexical, *location, std::string("Token não identificado: " + token_value));
+        return 1; 
+    }
 
+    if(token_type == QUEBRA_COMENTARIO) {
+        show_error(lexical, *location, std::string("Comentário não termina"));
+        return 1; 
+
+    }
+
+    if(token_type == QUEBRA_CAR) {
+        show_error(lexical, *location, std::string("Cadeia de caracteres não termina"));
+        return 1; 
+
+    }
+    
     if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
+        yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
         vl->emplace<std::string>(token_value); // Provides token_value to Bison
     }
 
@@ -51,9 +68,6 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
 }
 
 void yy::Parser::error(const location_type& loc, const std::string& msg) {
-    std::cerr << "Erro de sintaxe na linha "
-              << loc.begin.line << ", coluna " << loc.begin.column
-              << ": " << msg << std::endl;
-
-    exit(1);
+    show_error(syntactic, loc, msg);
 }
+
