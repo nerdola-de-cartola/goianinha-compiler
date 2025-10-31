@@ -2,6 +2,7 @@
 #include "scope_stack.hpp"
 #include "error.hpp"
 #include "variable.hpp"
+#include "function.hpp"
 #include <iostream>
 
 auto default_pos = yy::position(nullptr, 42, 49);
@@ -106,6 +107,11 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     add_all_parameters(list_params, f);
     Result r = stack->add_function(f);
     if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name(), stack);
+    
+    for (auto &param : f) { // Add function parameter to the stack
+        stack->add_variable(param);
+    }
+
     return transverse(f2->right, stack);
 }
 
@@ -150,6 +156,6 @@ void SemanticAnalyzer::analyze() {
     stack.push(); // Global scope
 
     transverse(root, &stack);
-    //std::cout << stack.toString() << std::endl;
+    std::cout << stack.toString() << std::endl;
 }
 

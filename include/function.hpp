@@ -1,28 +1,36 @@
-#ifndef FUNCTION_HPP
-#define FUNCTION_HPP
+    #ifndef FUNCTION_HPP
+    #define FUNCTION_HPP
 
-#include <vector>
-#include <string>
-#include "variable.hpp"
-#include "error.hpp"
+    #include <vector>
+    #include <string>
+    #include "variable.hpp"
+    #include "error.hpp"
 
-class Function {
-private:
-    std::string name;
-    std::vector<Variable> parameters;
-    VariableTypes return_type;
+    class Function {
+    private:
+        std::string name;
+        std::vector<Variable> parameters;
+        VariableTypes return_type;
 
-public:
-    Function(std::string function_name, VariableTypes return_type);
-    ~Function();
+    public:
+        Function(std::string function_name, VariableTypes return_type);
+        ~Function();
 
-    std::string get_name();
-    VariableTypes get_return_type();
-    Variable* get_parameter(std::string name);
+        std::string get_name();
+        VariableTypes get_return_type();
+        Variable* get_parameter(std::string name);
 
-    Result add_parameter(Variable var);
+        // Iterator access
+        auto begin() { return parameters.begin(); }
+        auto end()   { return parameters.end(); }
 
-    std::string toString();
-};
+        // Const versions for read-only iteration
+        auto begin() const { return parameters.begin(); }
+        auto end()   const { return parameters.end(); }
 
-#endif // FUNCTION_HPP
+        Result add_parameter(Variable var);
+
+        std::string toString();
+    };
+
+    #endif // FUNCTION_HPP
