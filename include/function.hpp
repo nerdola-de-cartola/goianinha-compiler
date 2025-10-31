@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "variable.hpp"
+#include "error.hpp"
 
 class Function {
 private:
@@ -19,7 +20,7 @@ public:
     VariableTypes get_return_type();
     Variable* get_parameter(std::string name);
 
-    void add_parameter(Variable var);
+    Result add_parameter(Variable var);
 
     std::string toString();
 };

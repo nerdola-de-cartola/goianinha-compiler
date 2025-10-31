@@ -1,5 +1,6 @@
 #include "scope_stack.hpp"
 #include "scope.hpp"
+#include "error.hpp"
 #include <iostream>
 ScopeStack::ScopeStack() {}
 ScopeStack::~ScopeStack() {}
@@ -12,13 +13,9 @@ void ScopeStack::pop() {
     this->scopes.pop_back();
 }
 
-void ScopeStack::add_function(Function f) {
-    if (this->scopes.empty()) {
-        std::cout << "ERROR NO SCOPE TO ADD FUNCTION\n";
-        exit(1);
-    }
-
-    this->scopes.back().add_function(f);
+Result ScopeStack::add_function(Function f) {
+    if (this->scopes.empty()) return ERROR; //ERROR
+    return this->scopes.back().add_function(f);
 }
 
 Function* ScopeStack::get_function(std::string name) {
@@ -36,12 +33,9 @@ Function* ScopeStack::get_function(std::string name) {
     return f;
 }
 
-void ScopeStack::add_variable(Variable var) {
-    if (this->scopes.empty()) {
-        std::cout << "ERROR NO SCOPE TO ADD VAR\n";
-        exit(1);
-    }
-    this->scopes.back().add_variable(var);
+Result ScopeStack::add_variable(Variable var) {
+    if (this->scopes.empty()) return ERROR; //ERROR
+    return this->scopes.back().add_variable(var);
 }
 
 Variable* ScopeStack::get_variable(std::string name) {

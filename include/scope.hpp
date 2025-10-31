@@ -14,10 +14,10 @@ public:
     Scope();
     ~Scope();
     
-    void add_function(Function f);
+    Result add_function(Function f);
     Function* get_function(std::string name);
 
-    void add_variable(Variable var);
+    Result add_variable(Variable var);
     Variable* get_variable(std::string name);
 
     std::string toString();

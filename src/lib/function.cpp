@@ -1,4 +1,5 @@
 #include "function.hpp"
+#include "error.hpp"
 #include <algorithm>
 
 Function::Function(std::string function_name, VariableTypes return_type)
@@ -10,8 +11,13 @@ std::string Function::get_name() {
     return this->name;
 }
 
-void Function::add_parameter(Variable var) {
+Result Function::add_parameter(Variable var) {
+    auto param_search = get_parameter(var.get_name());
+
+    if(param_search != nullptr) return ERROR;
+
     this->parameters.push_back(var);
+    return OK;
 }
 
 VariableTypes Function::get_return_type() {

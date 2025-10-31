@@ -35,7 +35,8 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node == nullptr) return;
 
     if(node->type == var) {
-        stack->add_variable(Variable(node->lexeme, type));
+        Result r = stack->add_variable(Variable(node->lexeme, type));
+        if(r == ERROR) show_error(semantc, default_loc, "repeated variable name " + node->lexeme + " in block");
         return;
     }
 
@@ -65,7 +66,8 @@ void add_all_parameters(Node *node, Function &f) {
 
     if(node->type == param) {
         Variable var = Variable(node->lexeme, *node->var_type);
-        f.add_parameter(var);
+        Result r = f.add_parameter(var);
+        if (r == ERROR) show_error(semantc, default_loc, "reapeted parameter name " + var.get_name() + " in function " + f.get_name());
     }
 
     add_all_parameters(node->left, f);
@@ -91,7 +93,8 @@ void transverse(Node *node, ScopeStack *stack) {
         auto f = Function(f1->lexeme, *f1->var_type);
         add_all_parameters(list_params, f);
         std::cout << "ola" << std::endl;
-        stack->add_function(f);
+        Result r = stack->add_function(f);
+        if(r == ERROR) show_error(semantc, default_loc, "repeated function name" + f.get_name());
     }
 
     transverse(node->left, stack);

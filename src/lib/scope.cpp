@@ -1,12 +1,17 @@
 #include "scope.hpp"
+#include "error.hpp"
 #include <algorithm>
 #include <iostream>
 
 Scope::Scope() {}
 Scope::~Scope() {}
+Result Scope::add_function(Function f) {
+    auto search_func = get_function(f.get_name());
 
-void Scope::add_function(Function f) {
+    if(search_func != nullptr) return ERROR; //ERROR
+
     this->functions.push_back(f);
+    return OK;
 }
 
 Function* Scope::get_function(std::string name) {
@@ -22,8 +27,13 @@ Function* Scope::get_function(std::string name) {
     return nullptr;      // not found
 }
 
-void Scope::add_variable(Variable var) {
+Result Scope::add_variable(Variable var) {
+    auto search_var = get_variable(var.get_name());
+
+    if (search_var != nullptr) return ERROR; //ERROR
+    
     this->variables.push_back(var);
+    return OK;
 }
 
 Variable* Scope::get_variable(std::string name) {

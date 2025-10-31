@@ -1,6 +1,9 @@
-car f(int i, car c, int j, int k, int l, int m, int n, car w, car i) {
+car f(int i, car c, int j, int k, int l, int m, int n, car w) {
     retorne 2;
 }
 
+int f() {}
+
 programa {
+    int i;
 }
