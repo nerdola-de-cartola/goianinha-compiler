@@ -60,6 +60,18 @@ void transverse_expr(Node *node, ScopeStack *stack, VariableTypes type) {
     if(t != type) return show_error(semantc, default_loc, std::string("wrong type"));
 }
 
+void add_all_parameters(Node *node, Function &f) {
+    if(node == nullptr) return;
+
+    if(node->type == param) {
+        Variable var = Variable(node->lexeme, *node->var_type);
+        f.add_parameter(var);
+    }
+
+    add_all_parameters(node->left, f);
+    add_all_parameters(node->right, f);
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -69,6 +81,17 @@ void transverse(Node *node, ScopeStack *stack) {
 
     if(node->type == list_decl_var) {
         transverse_decl_var(node->left, stack, *node->var_type);
+    }
+
+    if(node->type == func1) {
+        std::cout << "oi" << std::endl;
+        auto f1 = node;
+        auto f2 = node->left;
+        auto list_params = f2->left;
+        auto f = Function(f1->lexeme, *f1->var_type);
+        add_all_parameters(list_params, f);
+        std::cout << "ola" << std::endl;
+        stack->add_function(f);
     }
 
     transverse(node->left, stack);
@@ -98,6 +121,7 @@ void SemanticAnalyzer::analyze() {
     root->printTree();
 
     ScopeStack stack = ScopeStack();
+    stack.push(); // Global scope
 
     transverse(root, &stack);
     std::cout << stack.toString() << std::endl;

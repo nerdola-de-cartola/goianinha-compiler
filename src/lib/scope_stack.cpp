@@ -13,6 +13,11 @@ void ScopeStack::pop() {
 }
 
 void ScopeStack::add_function(Function f) {
+    if (this->scopes.empty()) {
+        std::cout << "ERROR NO SCOPE TO ADD FUNCTION\n";
+        exit(1);
+    }
+
     this->scopes.back().add_function(f);
 }
 
@@ -33,7 +38,7 @@ Function* ScopeStack::get_function(std::string name) {
 
 void ScopeStack::add_variable(Variable var) {
     if (this->scopes.empty()) {
-        std::cout << "ERROR\n";
+        std::cout << "ERROR NO SCOPE TO ADD VAR\n";
         exit(1);
     }
     this->scopes.back().add_variable(var);
