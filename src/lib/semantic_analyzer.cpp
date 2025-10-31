@@ -18,7 +18,7 @@ Variable *get_var(Node *node, ScopeStack *stack) {
     Variable *var = stack->get_variable(node->lexeme);
     
     if(var == nullptr) {
-        show_error(semantc, default_loc, "undeclared variable " + node->lexeme);
+        show_error(semantc, default_loc, "undeclared variable " + node->lexeme, stack);
     }
 
     return var;
@@ -28,7 +28,7 @@ Function *get_func(Node *node, ScopeStack *stack) {
     Function *f = stack->get_function(node->lexeme);
     
     if(f == nullptr) {
-        show_error(semantc, default_loc, std::string("undeclared function"));
+        show_error(semantc, default_loc, "undeclared function", stack);
     }
 
     return f;
@@ -44,7 +44,7 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node->type == var) {
         //std::cout << type << " " << node->lexeme << std::endl;
         Result r = stack->add_variable(Variable(node->lexeme, type));
-        if(r == ERROR) show_error(semantc, default_loc, "repeated variable name " + node->lexeme + " in block");
+        if(r == ERROR) show_error(semantc, default_loc, "repeated variable name " + node->lexeme + " in block", stack);
         return;
     }
 
@@ -73,7 +73,8 @@ void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type)
     if(current_type != expected_type) return show_error(
         semantc,
         default_loc,
-        "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type)
+        "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type),
+        stack
     );
 }
 
@@ -83,7 +84,11 @@ void add_all_parameters(Node *node, Function &f) {
     if(node->type == param) {
         Variable var = Variable(node->lexeme, *node->var_type);
         Result r = f.add_parameter(var);
-        if (r == ERROR) show_error(semantc, default_loc, "reapeted parameter name " + var.get_name() + " in function " + f.get_name());
+        if (r == ERROR) show_error(
+            semantc,
+            default_loc,
+            "reapeted parameter name " + var.get_name() + " in function " + f.get_name()
+        );
     }
 
     add_all_parameters(node->left, f);
@@ -100,7 +105,7 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     auto f = Function(f1->lexeme, *f1->var_type);
     add_all_parameters(list_params, f);
     Result r = stack->add_function(f);
-    if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name());
+    if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name(), stack);
     return transverse(f2->right, stack);
 }
 

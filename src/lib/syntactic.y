@@ -49,9 +49,11 @@ Epsilon:
 DeclFuncVar:
       Tipo ID DeclVar PONTO_VIRGULA DeclFuncVar {
         $$ = new Node(decl_func_var, 
-            new Node(list_var,
-                new Node(var, $2),
-                $3,
+            new Node(list_decl_var,
+                new Node(list_var,
+                    new Node(var, $2),
+                    new Node(list_var, $3)
+                ),
                 $1
             ),
             $5

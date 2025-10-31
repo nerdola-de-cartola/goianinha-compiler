@@ -1,7 +1,7 @@
 #include "scope_stack.hpp"
 #include "scope.hpp"
-#include "error.hpp"
 #include <iostream>
+
 ScopeStack::ScopeStack() {}
 ScopeStack::~ScopeStack() {}
 

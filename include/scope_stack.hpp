@@ -3,6 +3,7 @@
 
 #include <vector>
 #include "scope.hpp"
+#include "error.hpp"
 
 class ScopeStack {
 private:

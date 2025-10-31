@@ -5,7 +5,6 @@
 Node::Node(TypeNode type)
     : type(type), left(nullptr), right(nullptr), value(nullptr), var_type(nullptr), lexeme("") {}
 
-
 Node::Node(TypeNode type, Node *left, Node *right, int value)
     : type(type), left(left), right(right), value(new int(value)), var_type(nullptr), lexeme("") {}
 
@@ -32,6 +31,9 @@ Node::Node(TypeNode type, int value, std::string lexeme)
 
 Node:: Node(TypeNode type, Node *left, Node *right, VariableTypes var_type)
     : type(type), left(left), right(right), value(nullptr), var_type(new VariableTypes(var_type)), lexeme("") {}
+
+Node:: Node(TypeNode type, Node *left, VariableTypes var_type)
+    : type(type), left(left), right(nullptr), value(nullptr), var_type(new VariableTypes(var_type)), lexeme("") {}
 
 Node:: Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme)
     : type(type), left(left), right(nullptr), value(nullptr), var_type(new VariableTypes(var_type)), lexeme(lexeme) {}

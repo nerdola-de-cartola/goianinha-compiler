@@ -1,14 +1,9 @@
 #include <iostream>
-#include "syntactic.hpp"
+#include "error.hpp"
+#include "scope_stack.hpp"
 
 #define red "\033[31m"
 #define default "\033[0m"
-
-enum ErrorType {
-    lexical,
-    syntactic,
-    semantc,
-};
 
 std::string errorTypeToString(const ErrorType t) {
     switch (t) {
@@ -23,7 +18,7 @@ std::string errorTypeToString(const ErrorType t) {
     return "";
 }
 
-void show_error(ErrorType type, const yy::Parser::location_type &loc, const std::string &msg) {
+void show_error(ErrorType type, const yy::Parser::location_type &loc, const std::string &msg, ScopeStack *stack) {
     std::cerr
             << red 
             << errorTypeToString(type)
@@ -34,6 +29,9 @@ void show_error(ErrorType type, const yy::Parser::location_type &loc, const std:
             << msg
             << default
             << std::endl;
+
+    if (stack != nullptr)
+        std::cout << std::endl << stack->toString() << std::endl;
 
     return exit(1);
 }

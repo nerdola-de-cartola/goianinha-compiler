@@ -59,6 +59,7 @@ public:
     Node(TypeNode type);
     Node(TypeNode type, Node *left, Node *right, int value);
     Node(TypeNode type, Node *left, Node *right, VariableTypes var_type);
+    Node(TypeNode type, Node *left, VariableTypes var_type);
     Node(TypeNode type, Node *left, Node *right);
     Node(TypeNode type, Node *left);
     Node(TypeNode type, int value);
