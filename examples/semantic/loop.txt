@@ -1,0 +1,13 @@
+programa {
+    enquanto (0=='a') execute { /* INVALID */
+        novalinha;
+    }
+
+    enquanto ('b'=='a') execute { /* VALID */
+        novalinha;
+    }
+
+    enquanto (0==0) execute { /* VALID */
+        novalinha;
+    }
+}

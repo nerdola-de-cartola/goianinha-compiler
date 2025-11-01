@@ -178,6 +178,16 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
         );
 }
 
+void transverse_loop(Node *node, ScopeStack *stack) {
+    transverse_expr(node->left, stack, INT);
+    return transverse(node->right, stack);
+}
+
+void transverse_condition(Node *node, ScopeStack *stack) {
+    transverse_expr(node->left, stack, INT);
+    return transverse(node->right, stack);
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -186,6 +196,8 @@ void transverse(Node *node, ScopeStack *stack) {
     if (node->type == func1) return transverse_function_declaration(node, stack);
     if (node->type == assign_op) return transverse_assign_op(node, stack);
     if (node->type == func_call) return transverse_func_call(node, stack);
+    if (node->type == loop) return transverse_loop(node, stack);
+    if (node->type == if_cond) return transverse_condition(node, stack);
     if (node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op)
         return transverse_expr(node, stack, INT);
 

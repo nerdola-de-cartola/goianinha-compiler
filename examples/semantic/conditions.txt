@@ -1,0 +1,11 @@
+programa {
+    se (0 == 0) entao {
+
+    } senao {
+
+    }
+
+    se (0) entao {
+
+    }
+}
