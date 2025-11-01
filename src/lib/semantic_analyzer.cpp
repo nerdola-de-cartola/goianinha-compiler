@@ -114,11 +114,13 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     Result r = stack->add_function(f);
     if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name(), stack);
     
+    stack->push();
     for (auto &param : f) { // Add function parameter to the stack
         stack->add_variable(param);
     }
-
-    return transverse(f2->right, stack);
+    
+    transverse(f2->right, stack);
+    stack->pop();
 }
 
 void transverse_block(Node *node, ScopeStack *stack) {
