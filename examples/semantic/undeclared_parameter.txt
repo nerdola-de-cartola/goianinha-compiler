@@ -1,4 +1,4 @@
-car f(int i) {
+car f() {
     i = i + 1;
 }
 

@@ -9,6 +9,7 @@ auto default_pos = yy::position(nullptr, 42, 49);
 auto default_loc = yy::Parser::location_type(default_pos);
 
 void transverse(Node *node, ScopeStack *stack);
+void transverse_func_call(Node *node, ScopeStack *stack);
 
 SemanticAnalyzer::SemanticAnalyzer(LexicalAnalyzer &lexer) 
     : lexer(lexer), syn(SyntacticAnalyzer(&lexer)) {}
@@ -57,7 +58,12 @@ VariableTypes get_node_type(Node *node, ScopeStack *stack) {
     VariableTypes type = TNULL;
     if(node->var_type != nullptr) type = *node->var_type;
     if(node->type == var) type = get_var(node, stack)->get_type();
-    if(node->type == func_call) type = get_func(node, stack)->get_return_type();
+
+    if(node->type == func_call) {
+        type = get_func(node, stack)->get_return_type();
+        transverse_func_call(node, stack);
+    }
+
     return type;
 }
 
@@ -130,6 +136,48 @@ void transverse_assign_op(Node *node, ScopeStack *stack) {
     return transverse_expr(node->left, stack, var->get_type());
 }
 
+void transverse_func_call(Node *node, ScopeStack *stack) {
+    auto f = get_func(node, stack);
+
+    Node *n = node->left;
+    auto params  = f->getParameters();
+    int i = params.size() - 1;
+    bool finished = false;
+
+    while (i >= 0) {
+        //std::cout << "oi" << std::endl;
+        //std::cout << "ola" << std::endl;
+        if (n == nullptr) break;
+
+        if (n->type != list_exp) {
+            transverse_expr(n, stack, params[i].get_type());    
+            finished = true;
+            i--;
+            break;
+        }
+
+        transverse_expr(n->right, stack, params[i].get_type());
+        i--;
+        n = n->left;
+    }
+
+    if (i != -1)
+        show_error(
+            semantc,
+            default_loc,
+            "missing parameter " + params[params.size() - i - 1].get_name() + " on call to " + f->get_name(),
+            stack
+        );
+
+    if (!finished && !(params.size() == 0 && n == nullptr))
+        show_error(
+            semantc,
+            default_loc,
+            "extra parameter on call to " + f->get_name(),
+            stack
+        );
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -137,6 +185,7 @@ void transverse(Node *node, ScopeStack *stack) {
     if (node->type == list_decl_var) return transverse_decl_var(node, stack, *node->var_type);
     if (node->type == func1) return transverse_function_declaration(node, stack);
     if (node->type == assign_op) return transverse_assign_op(node, stack);
+    if (node->type == func_call) return transverse_func_call(node, stack);
     if (node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op)
         return transverse_expr(node, stack, INT);
 
@@ -150,10 +199,14 @@ void SemanticAnalyzer::analyze() {
 
     if (root == nullptr) return;
 
-    root->printTree();
-
     ScopeStack stack = ScopeStack();
     stack.push(); // Global scope
+    
+    //auto a = get_node_type(root, &stack);
+    //std::cout << root->type << std::endl;
+    //std::cout << Variable::typeToString(a) << std::endl;
+
+    root->printTree();
 
     transverse(root, &stack);
     std::cout << stack.toString() << std::endl;

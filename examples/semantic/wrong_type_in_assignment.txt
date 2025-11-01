@@ -1,4 +1,7 @@
+car f() {}
+
 programa {
-    int i;
+    int i, j;
+    j = f()
     i = 'a';
 }

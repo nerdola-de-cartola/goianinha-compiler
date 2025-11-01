@@ -1,0 +1,5 @@
+car f(int i, int j) {}
+
+programa {
+    f(0, f(0, 1))
+}

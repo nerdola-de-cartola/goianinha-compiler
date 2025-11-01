@@ -28,6 +28,8 @@
         auto begin() const { return parameters.begin(); }
         auto end()   const { return parameters.end(); }
 
+        std::vector<Variable> &getParameters() { return parameters; };
+
         Result add_parameter(Variable var);
 
         std::string toString();
