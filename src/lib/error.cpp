@@ -11,7 +11,7 @@ std::string errorTypeToString(const ErrorType t) {
             return std::string("Erro lexico na linha ");
         case syntactic:
             return std::string("Erro de sintaxe na linha ");
-        case semantc:
+        case semantic:
             return std::string("Erro semântico na linha ");
     }
 

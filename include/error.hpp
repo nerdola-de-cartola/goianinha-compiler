@@ -7,7 +7,7 @@
 enum ErrorType {
     lexical,
     syntactic,
-    semantc,
+    semantic,
 };
 
 enum Result {

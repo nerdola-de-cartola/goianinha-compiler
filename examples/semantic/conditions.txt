@@ -1,5 +1,5 @@
 programa {
-    se (0 == 0) entao {
+    se ('a' * 'b' e (1 + 2)) entao {
 
     } senao {
 

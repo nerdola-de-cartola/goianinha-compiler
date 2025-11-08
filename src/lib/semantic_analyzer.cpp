@@ -20,7 +20,7 @@ Variable *get_var(Node *node, ScopeStack *stack) {
     Variable *var = stack->get_variable(node->lexeme);
     
     if(var == nullptr) {
-        show_error(semantc, default_loc, "undeclared variable " + node->lexeme, stack);
+        show_error(semantic, default_loc, "undeclared variable " + node->lexeme, stack);
     }
 
     return var;
@@ -30,7 +30,7 @@ Function *get_func(Node *node, ScopeStack *stack) {
     Function *f = stack->get_function(node->lexeme);
     
     if(f == nullptr) {
-        show_error(semantc, default_loc, "undeclared function", stack);
+        show_error(semantic, default_loc, "undeclared function", stack);
     }
 
     return f;
@@ -46,7 +46,7 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node->type == var) {
         //std::cout << type << " " << node->lexeme << std::endl;
         Result r = stack->add_variable(Variable(node->lexeme, type));
-        if(r == ERROR) show_error(semantc, default_loc, "repeated variable name " + node->lexeme + " in block", stack);
+        if(r == ERROR) show_error(semantic, default_loc, "repeated variable name " + node->lexeme + " in block", stack);
         return;
     }
 
@@ -67,18 +67,47 @@ VariableTypes get_node_type(Node *node, ScopeStack *stack) {
     return type;
 }
 
+bool isOperation(Node *node) {
+    if(node->type == or_op || node->type == and_op || node->type == not_op || node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op || node->type == eq_op || node->type == dif_op || node->type == less_op || node->type == le_op || node->type == greater_op || node->type == ge_op)
+        return true;
+
+    return false;
+}
+
+// Return the type of a node recursive
+// Validate if all operations are between operands of the same type
+VariableTypes get_recursive_node_type(Node *node, ScopeStack *stack) {
+    if(node == nullptr) return TNULL;
+
+    auto type = get_node_type(node, stack);
+
+    if (type != TNULL) return type;
+
+    if(isOperation(node)) {
+        VariableTypes lt = get_recursive_node_type(node->left, stack);
+        VariableTypes rt = get_recursive_node_type(node->right, stack);
+
+        if (lt != rt) show_error(
+            semantic,
+            default_loc,
+            "different types in operation",
+            stack
+        );
+
+        return INT;
+    }
+
+    return TNULL;
+}
+
+// Validate if an expression has the expected type
 void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type) {
     if(node == nullptr) return;
-    
-    transverse_expr(node->left, stack, expected_type);
-    transverse_expr(node->right, stack, expected_type);
-    
-    VariableTypes current_type = get_node_type(node, stack);
 
-    if(current_type == TNULL) return;
+    auto current_type = get_recursive_node_type(node->left, stack);
 
     if(current_type != expected_type) return show_error(
-        semantc,
+        semantic,
         default_loc,
         "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type),
         stack
@@ -92,7 +121,7 @@ void add_all_parameters(Node *node, Function &f) {
         Variable var = Variable(node->lexeme, *node->var_type);
         Result r = f.add_parameter(var);
         if (r == ERROR) show_error(
-            semantc,
+            semantic,
             default_loc,
             "reapeted parameter name " + var.get_name() + " in function " + f.get_name()
         );
@@ -112,7 +141,7 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     auto f = Function(f1->lexeme, *f1->var_type);
     add_all_parameters(list_params, f);
     Result r = stack->add_function(f);
-    if(r == ERROR) show_error(semantc, default_loc, "repeated function name " + f.get_name(), stack);
+    if(r == ERROR) show_error(semantic, default_loc, "repeated function name " + f.get_name(), stack);
     
     stack->push();
     for (auto &param : f) { // Add function parameter to the stack
@@ -165,7 +194,7 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
 
     if (i != -1)
         show_error(
-            semantc,
+            semantic,
             default_loc,
             "missing parameter " + params[params.size() - i - 1].get_name() + " on call to " + f->get_name(),
             stack
@@ -173,7 +202,7 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
 
     if (!finished && !(params.size() == 0 && n == nullptr))
         show_error(
-            semantc,
+            semantic,
             default_loc,
             "extra parameter on call to " + f->get_name(),
             stack
@@ -181,12 +210,12 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
 }
 
 void transverse_loop(Node *node, ScopeStack *stack) {
-    transverse_expr(node->left, stack, INT);
+    get_recursive_node_type(node->left, stack);
     return transverse(node->right, stack);
 }
 
 void transverse_condition(Node *node, ScopeStack *stack) {
-    transverse_expr(node->left, stack, INT);
+    get_recursive_node_type(node->left, stack);
     return transverse(node->right, stack);
 }
 
@@ -200,8 +229,12 @@ void transverse(Node *node, ScopeStack *stack) {
     if (node->type == func_call) return transverse_func_call(node, stack);
     if (node->type == loop) return transverse_loop(node, stack);
     if (node->type == if_cond) return transverse_condition(node, stack);
-    if (node->type == add_op || node->type == sub_op || node->type == mul_op || node->type == div_op)
-        return transverse_expr(node, stack, INT);
+
+
+    if (isOperation(node)) {
+        get_recursive_node_type(node, stack);
+        return;
+    }
 
     transverse(node->left, stack);
     transverse(node->right, stack);
