@@ -9,10 +9,10 @@
 class SemanticAnalyzer {
 private:
     LexicalAnalyzer &lexer;
-    SyntacticAnalyzer syn;
+    SyntacticAnalyzer &syn;
 
 public:
-    SemanticAnalyzer(LexicalAnalyzer &lexer);
+    SemanticAnalyzer(LexicalAnalyzer &lexer, SyntacticAnalyzer &syn);
     ~SemanticAnalyzer();
     
     void analyze();

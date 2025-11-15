@@ -11,8 +11,8 @@ auto default_loc = yy::Parser::location_type(default_pos);
 void transverse(Node *node, ScopeStack *stack);
 void transverse_func_call(Node *node, ScopeStack *stack);
 
-SemanticAnalyzer::SemanticAnalyzer(LexicalAnalyzer &lexer) 
-    : lexer(lexer), syn(SyntacticAnalyzer(&lexer)) {}
+SemanticAnalyzer::SemanticAnalyzer(LexicalAnalyzer &lexer, SyntacticAnalyzer &syn) 
+    : lexer(lexer), syn(syn) {}
 
 SemanticAnalyzer::~SemanticAnalyzer() {}
 
@@ -104,7 +104,7 @@ VariableTypes get_recursive_node_type(Node *node, ScopeStack *stack) {
 void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type) {
     if(node == nullptr) return;
 
-    auto current_type = get_recursive_node_type(node->left, stack);
+    auto current_type = get_recursive_node_type(node, stack);
 
     if(current_type != expected_type) return show_error(
         semantic,
@@ -241,18 +241,17 @@ void transverse(Node *node, ScopeStack *stack) {
 }
 
 void SemanticAnalyzer::analyze() {
-    syn.parse();
     Node *root = lexer.get_ast();
-
-    if (root == nullptr) return;
+    
+    if (root == nullptr) {
+        syn.parse();
+        root = lexer.get_ast();
+        if (root == nullptr) return;
+    }
 
     ScopeStack stack = ScopeStack();
     stack.push(); // Global scope
     
-    //auto a = get_node_type(root, &stack);
-    //std::cout << root->type << std::endl;
-    //std::cout << Variable::typeToString(a) << std::endl;
-
     root->printTree();
 
     transverse(root, &stack);

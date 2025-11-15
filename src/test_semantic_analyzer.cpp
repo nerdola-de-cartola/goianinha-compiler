@@ -22,12 +22,14 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    LexicalAnalyzer lexer = LexicalAnalyzer(file);
-    SemanticAnalyzer sem = SemanticAnalyzer(lexer);
+    LexicalAnalyzer *lexer = new LexicalAnalyzer(file);
+    SyntacticAnalyzer syn = SyntacticAnalyzer(lexer);
+    SemanticAnalyzer sem = SemanticAnalyzer(*lexer, syn);
     sem.analyze();
 
     // Cleanup
     file.close();
+    delete lexer;
     
     return 0;
 }

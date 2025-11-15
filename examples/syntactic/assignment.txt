@@ -4,4 +4,7 @@ programa {
 
     n = 47;
     c = 'x';
+    
+    escreva n;
+    escreva c;
 }

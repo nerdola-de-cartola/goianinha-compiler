@@ -3,6 +3,9 @@
 #include <vector>
 #include <fstream>
 #include "lexical_analyzer.hpp"
+#include "syntactic_analyzer.hpp"
+#include "semantic_analyzer.hpp"
+#include "mips_generator.hpp"
 
 int main(int argc, char* argv[]) {
     std::cout << "Compiler v1.0.0" << std::endl;
@@ -24,6 +27,15 @@ int main(int argc, char* argv[]) {
     }
 
     LexicalAnalyzer *lexer = new LexicalAnalyzer(file);
+    SyntacticAnalyzer syn = SyntacticAnalyzer(lexer);
+    syn.parse();
+    SemanticAnalyzer sem = SemanticAnalyzer(*lexer, syn);
+    sem.analyze();
+
+    auto code = generate_code(lexer->get_ast());
+
+    print_code(code);
+    run_code(code);
 
     // Cleanup
     file.close();

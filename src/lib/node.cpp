@@ -161,8 +161,8 @@ std::string Node::typeToString() {
         case loop: return "loop";
         case if_cond: return "if_cond";
         case if_blocks: return "if_blocks";
-        case write: return "write";
-        case read: return "read";
+        case write_cmd: return "write";
+        case read_cmd: return "read";
         case return_cmd: return "return_cmd";
         case new_line: return "new_line";
         case var: return "var";
