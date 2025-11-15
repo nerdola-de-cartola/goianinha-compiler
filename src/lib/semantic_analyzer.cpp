@@ -252,9 +252,6 @@ void SemanticAnalyzer::analyze() {
     ScopeStack stack = ScopeStack();
     stack.push(); // Global scope
     
-    root->printTree();
-
     transverse(root, &stack);
-    std::cout << stack.toString() << std::endl;
 }
 
