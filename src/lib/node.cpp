@@ -26,9 +26,6 @@ Node::Node(TypeNode type, Node *left, std::string lexeme)
 Node::Node(TypeNode type, Node *left, int value, std::string lexeme)
     : type(type), left(left), right(nullptr), value(new int(value)), var_type(nullptr), lexeme(lexeme) {}
 
-Node::Node(TypeNode type, int value, std::string lexeme)
-    : type(type), left(nullptr), right(nullptr), value(new int(value)), var_type(nullptr), lexeme(lexeme) {std::cout << "use\n";}
-
 Node:: Node(TypeNode type, Node *left, Node *right, VariableTypes var_type)
     : type(type), left(left), right(right), value(nullptr), var_type(new VariableTypes(var_type)), lexeme("") {}
 
@@ -161,8 +158,8 @@ std::string Node::typeToString() {
         case loop: return "loop";
         case if_cond: return "if_cond";
         case if_blocks: return "if_blocks";
-        case write_cmd: return "write";
-        case read_cmd: return "read";
+        case write_cmd: return "write_cmd";
+        case read_cmd: return "read_cmd";
         case return_cmd: return "return_cmd";
         case new_line: return "new_line";
         case var: return "var";

@@ -59,7 +59,7 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
 
     }
     
-    if (token_type == CONST_INT || token_type == CONST_CAR || token_type == ID) {
+    if (token_type == CONST_INT || token_type == CONST_CAR || token_type == CONST_STR || token_type == ID) {
         yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
         vl->emplace<std::string>(token_value); // Provides token_value to Bison
     }

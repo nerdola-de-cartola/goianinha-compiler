@@ -34,7 +34,7 @@
 %token CMD_PROGRAMA  CMD_RETORNE CMD_LEIA CMD_ESCREVA CMD_SE CMD_ENTAO CMD_SE_NAO CMD_ENQUANTO CMD_EXECUTE ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVE FECHA_CHAVE VIRGULA PONTO_VIRGULA ATRIBUICAO NEGACAO OU E IGUAL DIFERENTE MENOR_QUE MAIOR_QUE MAIOR_IGUAL_QUE MENOR_IGUAL_QUE SOMA SUBTRACAO MULIPLICACAO DIVISAO ABRE_COMENTARIO FECHA_COMENTARIO QUEBRA_COMENTARIO ASPAS_SIMPLES ASPAS_DUPLAS QUEBRA_CAR UNKNOWN
 %token <std::string> CONST_INT CONST_CAR CONST_STR ID
 
-%type <Node *> Programa DeclFuncVar DeclProg DeclVar DeclFunc ListaParametros ListaParametrosCont Bloco ListaDeclVar ListaComando Comando Expr OrExpr AndExpr EqExpr DesignExpr AddExpr MulExpr UnExpr CarExpr PrimExpr ListExpr
+%type <Node *> Programa DeclFuncVar DeclProg DeclVar DeclFunc ListaParametros ListaParametrosCont Bloco ListaDeclVar ListaComando Comando Expr OrExpr AndExpr EqExpr DesignExpr AddExpr MulExpr UnExpr CarExpr StrExpr PrimExpr ListExpr
 %type <VariableTypes> Tipo
 
 %start Programa
@@ -118,8 +118,8 @@ Comando:
     PONTO_VIRGULA {$$ = nullptr;}
     | Expr {$$ = $1;}
     | CMD_RETORNE Expr PONTO_VIRGULA {$$ = new Node(return_cmd, $2);}
-    | CMD_LEIA ID PONTO_VIRGULA {$$ = new Node(read, $2);}
-    | CMD_ESCREVA Expr PONTO_VIRGULA {$$ = new Node(write, $2);}
+    | CMD_LEIA ID PONTO_VIRGULA {$$ = new Node(read_cmd, $2);}
+    | CMD_ESCREVA Expr PONTO_VIRGULA {$$ = new Node(write_cmd, $2);}
     | NOVA_LINHA PONTO_VIRGULA {$$ = new Node(new_line);}
     | CMD_SE ABRE_PARENTESES Expr FECHA_PARENTESES CMD_ENTAO Comando {$$ = new Node(if_cond, $3, $6);}
     | CMD_SE ABRE_PARENTESES Expr FECHA_PARENTESES CMD_ENTAO Comando CMD_SE_NAO Comando {$$ = new Node(if_cond, $3, new Node(if_blocks, $6, $8));}
@@ -165,7 +165,7 @@ UnExpr:
     | NEGACAO PrimExpr {$$ = new Node(not_op, $2);}
     | PrimExpr {$$ = $1;}
 
-CarExpr:
+StrExpr:
     ASPAS_DUPLAS CONST_STR ASPAS_DUPLAS {$$ = new Node(const_string, STR, $2);}
 
 CarExpr:
@@ -176,6 +176,7 @@ PrimExpr:
     | ID ABRE_PARENTESES FECHA_PARENTESES {$$ = new Node(func_call, $1);}
     | ID {$$ = new Node(var, $1);}
     | CarExpr {$$ = $1;}
+    | StrExpr {$$ = $1;}
     | CONST_INT {$$ = new Node(number, INT, $1);}
     | ABRE_PARENTESES Expr FECHA_PARENTESES {$$ = $2;}
 

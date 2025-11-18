@@ -3,56 +3,83 @@
 #include <unistd.h>   // for mkstemp, close, unlink
 #include <cstdlib>    // for system()
 
+auto def_code = 
+        ".data\n"
+        "msg: .asciiz \"Hello, world\n\"\n"
+        ".text\n"
+        ".globl main\n"
+        "main:\n"
+        "    la   $a0, msg\n"
+        "    li   $v0, 4\n"
+        "    syscall\n"
+        "    li   $v0, 10\n"
+        "    syscall\n";
 
-std::string generate_code(Node *root) {
-    return 
-        ".data @"
-        "msg: .asciiz \"Hello, world\n\" @"
-        ".text @"
-        ".globl main @"
-        "main: @"
-        "    la   $a0, msg @"
-        "    li   $v0, 4 @"
-        "    syscall @"
-        "    li   $v0, 10 @"
-        "    syscall @"
-    ;
+
+MipsGenerator::MipsGenerator() {}
+MipsGenerator::~MipsGenerator() {}
+
+auto generator = MipsGenerator();
+
+void transverse_code(Node *node) {
+    if(node == nullptr) return;
+
+    if (node->type == const_string) {
+        generator.data_segments.push_back(node->lexeme);
+    }
+
+    transverse_code(node->left);
+    transverse_code(node->right);
+}
+
+
+std::string data_section() {
+    std::string buffer = ".data\n";
+
+    unsigned long int i = 0;
+    for (auto data_segment : generator.data_segments) {
+        buffer += "msg" + std::to_string(i) + ": .asciiz \"" + data_segment + "\"\n";
+        i++;
+    }
+
+    return buffer;
+}
+
+std::string generate_code(Node *node) {
+    std::string buffer;
+    transverse_code(node);
+    buffer += data_section();
+    //std::cout << buffer << std::endl << std::endl << std::endl;
+    return def_code;
+    return buffer;
 }
 
 void print_code(const std::string &code) {
     std::string buffer;
+    bool in_const_str = false;
 
     for (long unsigned int i = 0; i < code.size(); i++) {
-        //std::cout << code[i] << std::endl;
+        if(code[i] == '\"') {
+            in_const_str = !in_const_str;
+        }
 
-        if(code[i] == '\n') {
+        if(code[i] == '\n' && in_const_str) {
             buffer.push_back('\\');
             buffer.push_back('n');
             continue;
         }
-
-        if(code[i] == '@') {
-            buffer.push_back('\n');
-            continue;
-        }
-
+        
         buffer.push_back(code[i]);
     }
 
-    std::cout << buffer << std::endl;
+    std::cout <<
+        "======================================================\n" <<
+        buffer <<
+        "======================================================\n" <<
+        std::endl;
 }
 
 void run_code(const std::string& code) {
-    std::string buffer;
-
-    for (long unsigned int i = 0; i < code.size(); i++) {
-        if(code[i] == '@') {
-            buffer.push_back('\n');
-            continue;
-        }
-        buffer.push_back(code[i]);
-    }
-
     // Create a temporary file template
     char tmpFileTemplate[] = "mipsXXXXXX";
 
@@ -72,7 +99,7 @@ void run_code(const std::string& code) {
         return;
     }
 
-    tmpFile << buffer;
+    tmpFile << code;
     tmpFile.close();
     close(fd);
 

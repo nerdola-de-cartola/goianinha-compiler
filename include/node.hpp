@@ -67,7 +67,6 @@ public:
     Node(TypeNode type, Node *left, std::string lexeme);
     Node(TypeNode type, Node *left, int value, std::string lexeme);
     Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme);
-    Node(TypeNode type, int value, std::string lexeme);
     Node(TypeNode type, VariableTypes var_type, std::string lexeme);
     ~Node();
 
