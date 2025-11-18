@@ -1,16 +1,11 @@
 programa {
-
-
-
     se ('a' * 'b' e (1 + 'c')) entao {
-
-
-
-
 
     } senao {
 
     }
 
+    se (0) entao {
 
+    }
 }
