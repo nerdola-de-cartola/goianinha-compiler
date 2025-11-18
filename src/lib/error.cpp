@@ -8,20 +8,21 @@
 std::string errorTypeToString(const ErrorType t) {
     switch (t) {
         case lexical:
-            return std::string("Erro lexico na linha ");
+            return std::string("Erro lexico");
         case syntactic:
-            return std::string("Erro de sintaxe na linha ");
+            return std::string("Erro de sintaxe");
         case semantic:
-            return std::string("Erro semântico na linha ");
+            return std::string("Erro semântico");
     }
 
     return "";
 }
 
-void show_error(ErrorType type, const yy::Parser::location_type &loc, const std::string &msg, ScopeStack *stack) {
+void show_error(ErrorType type, const yy::location &loc, const std::string &msg, ScopeStack *stack) {
     std::cerr
             << red 
             << errorTypeToString(type)
+            << " na linha "
             << loc.begin.line
             << ", coluna "
             << loc.begin.column

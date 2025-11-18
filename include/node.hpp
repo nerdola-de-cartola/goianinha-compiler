@@ -3,6 +3,8 @@
 
 #include <variable.hpp>
 #include <string>
+#include "location.hh"
+
 
 enum TypeNode {
     id,
@@ -51,23 +53,20 @@ public:
     TypeNode type;
     Node *left;
     Node *right;
-    int *value;
     VariableTypes *var_type;
     std::string lexeme;
+    yy::location &loc;
 
 public:
-    Node(TypeNode type);
-    Node(TypeNode type, Node *left, Node *right, int value);
-    Node(TypeNode type, Node *left, Node *right, VariableTypes var_type);
-    Node(TypeNode type, Node *left, VariableTypes var_type);
-    Node(TypeNode type, Node *left, Node *right);
-    Node(TypeNode type, Node *left);
-    Node(TypeNode type, int value);
-    Node(TypeNode type, std::string lexeme);
-    Node(TypeNode type, Node *left, std::string lexeme);
-    Node(TypeNode type, Node *left, int value, std::string lexeme);
-    Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme);
-    Node(TypeNode type, VariableTypes var_type, std::string lexeme);
+    Node(TypeNode type, yy::location &loc);
+    Node(TypeNode type, Node *left, yy::location &loc);
+    Node(TypeNode type, std::string lexeme, yy::location &loc);
+    Node(TypeNode type, Node *left, Node *right, yy::location &loc);
+    Node(TypeNode type, Node *left, std::string lexeme, yy::location &loc);
+    Node(TypeNode type, Node *left, VariableTypes var_type, yy::location &loc);
+    Node(TypeNode type, VariableTypes var_type, std::string lexeme, yy::location &loc);
+    Node(TypeNode type, Node *left, Node *right, VariableTypes var_type, yy::location &loc);
+    Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme, yy::location &loc);
     ~Node();
 
     void traverse_prev();

@@ -1,4 +1,12 @@
 programa {
     int i;
+
+
+
+
+
+
+
+    
     j = 0;
 }

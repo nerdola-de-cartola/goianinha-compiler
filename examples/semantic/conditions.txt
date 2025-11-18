@@ -1,20 +1,16 @@
-int f(int a) {
-    int a;
-    retorne f1();
-}
-
-int f1() {
-    retorne 0;
-}
-
 programa {
-    se ('a' * 'b' e (1 + 2)) entao {
+
+
+
+    se ('a' * 'b' e (1 + 'c')) entao {
+
+
+
+
 
     } senao {
 
     }
 
-    se (0) entao {
 
-    }
 }
