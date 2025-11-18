@@ -1,0 +1,7 @@
+int f() {}
+car fib() {}
+int factorial() {}
+
+programa {
+    escreva "Ola \n Mundo \n\n";
+}

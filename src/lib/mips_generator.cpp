@@ -28,6 +28,14 @@ void transverse_code(Node *node) {
         generator.data_segments.push_back(node->lexeme);
     }
 
+    if (node->type == prog) {
+        generator.functions.push_back("main");
+    }
+
+    if (node->type == func1) {
+        generator.functions.push_back(node->lexeme);
+    }
+
     transverse_code(node->left);
     transverse_code(node->right);
 }
@@ -45,12 +53,26 @@ std::string data_section() {
     return buffer;
 }
 
+std::string text_section() {
+    std::string buffer = ".text\n";
+    buffer += ".globl main\n";
+
+    for (auto &func : generator.functions) {
+        buffer += func + ":\n";
+    }
+
+    return buffer;
+}
+
 std::string generate_code(Node *node) {
     std::string buffer;
     transverse_code(node);
     buffer += data_section();
+    buffer += text_section();
+
     //std::cout << buffer << std::endl << std::endl << std::endl;
-    return def_code;
+    //return def_code;
+
     return buffer;
 }
 

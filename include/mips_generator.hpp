@@ -9,6 +9,7 @@ class MipsGenerator {
 private:
 public:
     std::vector<std::string> data_segments;
+    std::vector<std::string> functions;
     MipsGenerator();
     ~MipsGenerator();
 };
