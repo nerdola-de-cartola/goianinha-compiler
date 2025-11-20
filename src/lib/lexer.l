@@ -1,5 +1,6 @@
 %option c++
 %option noyywrap
+%option yylineno
 
 %{
 #include <string>
@@ -7,7 +8,7 @@
 
 // To store the semantic value
 std::string yylval;
-int yylineno = 1;
+//int yylineno = -10;
 %}
 
 DIGIT           [0-9]
@@ -60,25 +61,25 @@ WHITESPACE      [\t\r" "]
 
 "/*"                                { BEGIN(comentario); yylval = YYText(); }
 <comentario>"*/"                    { BEGIN(INITIAL); yylval = YYText(); }
-<comentario>"\n"                    { BEGIN(INITIAL); yylineno++; yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
+<comentario>"\n"                    { BEGIN(INITIAL); ; yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
 <comentario>.                       { /* IGONORE COMENTS */ }
 
 
 \'                                  { BEGIN(car_const); yylval = YYText(); return ASPAS_SIMPLES; }
 <car_const>\'                       { BEGIN(INITIAL); yylval = YYText(); return ASPAS_SIMPLES; }
-<car_const>"\n"                     { BEGIN(INITIAL); yylineno++; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
+<car_const>"\n"                     { BEGIN(INITIAL); ; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
 <car_const>[^''\n]                  { yylval = YYText(); return CONST_CAR; }
 
 \"                                  { BEGIN(str_const); yylval = YYText(); return ASPAS_DUPLAS; }
 <str_const>\"                       { BEGIN(INITIAL); yylval = YYText(); return ASPAS_DUPLAS; }
-<str_const>"\n"                     { BEGIN(INITIAL); yylineno++; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
+<str_const>"\n"                     { BEGIN(INITIAL); ; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
 <str_const>[^'"\n]+                 { yylval = YYText(); return CONST_STR; }
 
 {ID}                                { yylval = YYText(); return ID; }
 
 {DIGIT}+                            { yylval = YYText(); return CONST_INT; }
-{WHITESPACE}                        { /* ignore white spaces */ }
-"\n"                                { yylineno++; }   // conta linhas
+{WHITESPACE}                        { yylval = YYText(); }
+"\n"                                { ; }   // conta linhas
 <<EOF>>                             { yylval = YYText(); return TOK_EOF; }
 .                                   { yylval = YYText(); return UNKNOWN; }
 %%

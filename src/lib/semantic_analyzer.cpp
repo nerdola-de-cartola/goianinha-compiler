@@ -34,7 +34,10 @@ Function *get_func(Node *node, ScopeStack *stack) {
 }
 
 void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
-    if(node == nullptr) return;
+    if(node == nullptr) {
+        //std::cout << stack->toString() << std::endl;
+        return;
+    }
 
     if(node->type == list_decl_var) {
         type = *node->var_type;
@@ -44,7 +47,6 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
         //std::cout << type << " " << node->lexeme << std::endl;
         Result r = stack->add_variable(Variable(node->lexeme, type));
         if(r == ERROR) show_error(semantic, node->loc, "repeated variable name " + node->lexeme + " in block", stack);
-        return;
     }
 
     transverse_decl_var(node->left, stack, type);
@@ -80,6 +82,11 @@ VariableTypes get_recursive_node_type(Node *node, ScopeStack *stack) {
 
     if (type != TNULL) return type;
 
+    if (node->type == assign_op) {
+        auto var = get_var(node, stack);
+        return var->get_type();
+    }
+
     if(isOperation(node)) {
         VariableTypes lt = get_recursive_node_type(node->left, stack);
         VariableTypes rt = get_recursive_node_type(node->right, stack);
@@ -107,12 +114,15 @@ void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type)
 
     auto current_type = get_recursive_node_type(node, stack);
 
-    if(current_type != expected_type) return show_error(
-        semantic,
-        node->loc,
-        "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type),
-        stack
-    );
+    if(current_type != expected_type) {
+        std::cout << node->toString() << std::endl;
+        return show_error(
+            semantic,
+            node->loc,
+            "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type),
+            stack
+        );
+    }
 }
 
 void add_all_parameters(Node *node, Function &f) {

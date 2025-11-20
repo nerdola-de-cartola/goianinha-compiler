@@ -35,7 +35,6 @@ enum TypeNode {
     return_cmd,
     new_line,
     var,
-    list_var,
     list_decl_var,
     block,
     func1,

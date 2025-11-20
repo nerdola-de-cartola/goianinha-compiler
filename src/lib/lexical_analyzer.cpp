@@ -37,10 +37,24 @@ std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
     return {token_type, token_value, token_line};
 }
 
+int last_line = -1;
+int last_length = 0;
+
 int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     auto [token_type, token_value, token_line] = lexer->get_next_token();
-    location->begin.line   = token_line;
-    location->begin.column = token_value.length();
+
+    last_line = location->begin.line;
+    location->begin.line = token_line;
+
+    if (token_line != last_line) {
+        location->begin.column = 0; // New line
+    } else {
+        location->begin.column += last_length;
+    }
+    
+    last_length = token_value.length();
+    if (location != nullptr) {
+    }
     
     if(token_type == UNKNOWN) {
         show_error(lexical, *location, std::string("Token não identificado: " + token_value));

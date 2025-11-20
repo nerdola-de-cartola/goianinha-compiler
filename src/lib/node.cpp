@@ -148,7 +148,6 @@ std::string Node::typeToString() {
         case return_cmd: return "return_cmd";
         case new_line: return "new_line";
         case var: return "var";
-        case list_var: return "list_var";
         case list_decl_var: return "list_decl_var";
         case block: return "block";
         case func1: return "func1";
