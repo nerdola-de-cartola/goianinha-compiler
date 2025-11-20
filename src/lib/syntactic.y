@@ -110,7 +110,7 @@ ListaComando:
 
 Comando:
     PONTO_VIRGULA {$$ = nullptr;}
-    | Expr {$$ = $1;}
+    | Expr PONTO_VIRGULA {$$ = $1;}
     | CMD_RETORNE Expr PONTO_VIRGULA {$$ = new Node(return_cmd, $2, @$);}
     | CMD_LEIA ID PONTO_VIRGULA {$$ = new Node(read_cmd, $2, @$);}
     | CMD_ESCREVA Expr PONTO_VIRGULA {$$ = new Node(write_cmd, $2, @$);}

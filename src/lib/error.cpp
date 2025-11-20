@@ -20,7 +20,7 @@ std::string errorTypeToString(const ErrorType t) {
 
 void show_error(ErrorType type, const yy::location &loc, const std::string &msg, ScopeStack *stack) {
     std::string line_msg;
-    
+
     if (loc.begin.line != loc.end.line) {
         line_msg = " da linha "
             + std::to_string(loc.begin.line)

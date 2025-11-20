@@ -1,5 +1,4 @@
-car checaOrd(int quant)
-	{
+car checaOrd(int quant) {
 	int cont, valAtual;
 	car ordenado;
 	ordenado='v';
@@ -9,17 +8,17 @@ car checaOrd(int quant)
 	escreva quant;
 	escreva " numeros inteiros separados entre si por um espaco";
 	
-	enquanto (cont < quant) execute
-	{	int proxVal; /*Variavel declarada dentro de bloco */
+	enquanto (cont < quant) execute {
+		int proxVal; /*Variavel declarada dentro de bloco */
 		leia proxVal;
-		se (valAtual < proxVal)
-		entao 
+
+		se (valAtual < proxVal) entao 
 			valAtual=proxVal;
-		senao
-			{
-				ordenado='f';
-				cont=quant;
-			}
+		senao {
+			ordenado='f';
+			cont=quant;
+		}
+
 		cont=cont+1;		
 	}
     retorne ordenado;
@@ -31,13 +30,12 @@ programa{
 	escreva "digite o tamanho de uma sequencia de numeros inteiros - digite 0 para terminar.";
 	leia quant;
 	
-	enquanto (quant != 0) execute{
-		se (checaOrd(quant)=='v')
-		entao{ 
+	enquanto (quant != 0) execute {
+		se (checaOrd(quant)=='v') entao { 
 			escreva "ORDENADA";
 			novalinha;
 		}
-		senao{
+		senao {
 			escreva "DESORDENADA";
 			novalinha;
 		}

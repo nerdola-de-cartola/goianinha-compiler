@@ -5,8 +5,7 @@ programa {
 	novalinha;
 	leia nota;
 	
-	se (nota<6)
-	entao{
+	se (nota<6) entao {
 		car conceito;
 		conceito='D';
 		escreva "Conceito: ";
@@ -14,8 +13,7 @@ programa {
 		novalinha;
 	}
 	senao{
-		se(nota<7)
-		entao{
+		se(nota<7) entao {
 			car conceito;
 			conceito='C';
 			escreva "Conceito: ";
@@ -23,8 +21,7 @@ programa {
 			novalinha;
 		}
 		senao{
-			 se (nota<9)
-			 entao{
+			 se (nota<9) entao {
 				car conceito;
 				conceito='B';
 				escreva "Conceito: ";
