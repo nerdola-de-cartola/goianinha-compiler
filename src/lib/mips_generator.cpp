@@ -18,6 +18,7 @@ auto def_code =
         "    syscall\n";
 
 void transverse_code(Node *node, ScopeStack *stack);
+std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack);
 
 MipsGenerator::MipsGenerator() {}
 MipsGenerator::~MipsGenerator() {}
@@ -36,6 +37,12 @@ int generate_expr(Node *node, ScopeStack *stack) {
         return 0;
     }
 
+    if(node->type == var) {
+        auto [var, scope, pos] = get_var_on_stack(node, stack);
+        std::string op = "lw $s0, " + std::to_string(4 + pos * 4) + "($sp)";
+        generator.add_operation(op); // Load var on s0
+    }
+
     if(node->type == add_op) {
         generate_expr(node->left, stack);
         generator.add_operation("sw $s0, 0($sp)"); // Save left result on stack
@@ -49,15 +56,19 @@ int generate_expr(Node *node, ScopeStack *stack) {
     return 0;
 }
 
+std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack) {
+    int pos;
+    int scope;
+    auto var = stack->get_variable(node->lexeme, &scope, &pos);
+    return {var, scope, pos};
+}
+
 void generate_assign_op(Node *node, ScopeStack *stack) {
-    int *pos = new int;
-    int *scope = new int;
-    auto var = stack->get_variable(node->lexeme, scope, pos);
+    auto [var, scope, pos] = get_var_on_stack(node, stack);
+    std::cout << pos << std::endl;
     generate_expr(node->left, stack);
-    std::string op = "sw $s0, " + std::to_string(*pos * 4) + "($sp)";
+    std::string op = "sw $s0, " + std::to_string(4 + pos * 4) + "($sp)";
     generator.add_operation(op);
-    delete pos;
-    delete scope;
 }
 
 void generate_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {

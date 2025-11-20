@@ -1,9 +1,9 @@
 programa {
     int i, j, n;
-    n = 42 + 7 + 1 + 3;
-    
-    escreva n;
-    escreva "\n";
+
+    i = 1000;
+    n = 42 + 7 + 1 + 3;  /* 53 */
+    j = n + 7 + 17; /* 77 */
 
     escreva i;
     escreva "\n";
@@ -11,4 +11,8 @@ programa {
     escreva j;
     escreva "\n";
 
+    escreva n;
+    escreva "\n";
+
+    /* Esperado 1000 77 53 */
 }
