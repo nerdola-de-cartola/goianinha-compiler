@@ -1,4 +1,5 @@
 /* Este é um programa em Goianinha que calcula que possui varias funcoes misturadas com varias declaracoes de variaveis globais. */
+
 int fatorial(int n){
 	se (n==0) entao
 		retorne 1;

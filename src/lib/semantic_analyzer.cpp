@@ -7,6 +7,7 @@
 
 void transverse(Node *node, ScopeStack *stack);
 void transverse_func_call(Node *node, ScopeStack *stack);
+void transverse_block(Node *node, ScopeStack *stack, Function *f);
 
 SemanticAnalyzer::SemanticAnalyzer(LexicalAnalyzer &lexer, SyntacticAnalyzer &syn) 
     : lexer(lexer), syn(syn) {}
@@ -44,9 +45,11 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     }
 
     if(node->type == var) {
-        //std::cout << type << " " << node->lexeme << std::endl;
         Result r = stack->add_variable(Variable(node->lexeme, type));
-        if(r == ERROR) show_error(semantic, node->loc, "repeated variable name " + node->lexeme + " in block", stack);
+        if(r == ERROR) {
+            std::cout << node->toString() << std::endl;
+            show_error(semantic, node->loc, "repeated variable name " + node->lexeme + " in block", stack);
+        }
     }
 
     transverse_decl_var(node->left, stack, type);
@@ -146,22 +149,21 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
         show_error(semantic, node->loc, "repeated function name " + f.get_name(), stack);
     }
     
-    stack->push();
-    for (auto &param : f) { // Add function parameter to the stack
-        stack->add_variable(param);
-    }
-    
-    transverse(f2->right, stack);
-    stack->pop();
+    transverse_block(f2->right, stack, &f);
 }
 
-void transverse_block(Node *node, ScopeStack *stack) {
+void transverse_block(Node *node, ScopeStack *stack, Function *f) {
     stack->push();
-    //std::cout << std::endl << stack->toString() << std::endl;
+
+    if (f != nullptr) {
+        for (auto &param : *f) { // Add function parameter to the stack
+            stack->add_variable(param);
+        }
+    }
+
     transverse(node->left, stack);
     transverse(node->right, stack);
     stack->pop();
-    //std::cout << std::endl << stack->toString() << std::endl;
     return;
 }
 
@@ -224,7 +226,7 @@ void transverse_condition(Node *node, ScopeStack *stack) {
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
-    if (node->type == block) return transverse_block(node, stack);
+    if (node->type == block) return transverse_block(node, stack, nullptr);
     if (node->type == list_decl_var) return transverse_decl_var(node, stack, *node->var_type);
     if (node->type == func1) return transverse_function_declaration(node, stack);
     if (node->type == assign_op) return transverse_assign_op(node, stack);

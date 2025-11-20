@@ -43,17 +43,15 @@ std::tuple<TokenType, std::string, int, int>  LexicalAnalyzer::get_next_token() 
 
     if (token_line == last_line) {
         token_col += last_length; 
-        //std::cout << "lasjdh" << std::endl;
     } else {
         token_col = 1;
     }
 
+    if (token_value == "\t") token_value = "    ";
     last_length = token_value.length();
 
-    //std::cout << "(" << token_line << ", " << token_col << ")" << std::endl;
-
     if(token_type == WHITES) {
-        //std::cout << "white space " << token_value.length() << std::endl;
+        std::cout << "white space " << token_value << token_value.length() << std::endl;
         return get_next_token();
     }
 
