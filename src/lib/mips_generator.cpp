@@ -170,8 +170,10 @@ void generate_conditions(Node *node, ScopeStack *stack) {
 
     if(blocks->type == block) { // Only if
         generator.add_operation("beq $s0, $t1, " + then_label);
+        generator.add_operation("b " + end_label);
         generator.add_operation(then_label + ":");
         transverse_code(blocks, stack);
+        generator.add_operation(end_label + ":");
     } else { // If and else
         generator.add_operation("beq $s0, $t1, " + then_label);
         generator.add_operation(else_label + ":");
@@ -181,9 +183,17 @@ void generate_conditions(Node *node, ScopeStack *stack) {
         transverse_code(blocks->left, stack); // Then
         generator.add_operation(end_label + ":");
     }
+}
 
-
-
+void generate_new_line(Node *node, ScopeStack *stack) {
+    generator.data_segments.push_back("\n");
+    auto index = generator.data_segments.size() - 1;
+    std::string op = "la $a0, msg" + std::to_string(index);
+    generator.add_operation(op);
+    generator.add_operation("li $v0, 4");
+    generator.add_operation("syscall");
+    transverse_code(node->left, stack);
+    transverse_code(node->right, stack);
 }
 
 
@@ -195,6 +205,7 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == assign_op) return generate_assign_op(node, stack);
     if (node->type == write_cmd) return generate_write_cmd(node, stack);
     if (node->type == if_cond) return generate_conditions(node, stack);
+    if (node->type == new_line) return generate_new_line(node, stack);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);
