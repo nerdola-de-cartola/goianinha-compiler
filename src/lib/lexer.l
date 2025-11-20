@@ -61,7 +61,7 @@ WHITESPACE      [\t\r" "]
 
 "/*"                                { BEGIN(comentario); yylval = YYText(); }
 <comentario>"*/"                    { BEGIN(INITIAL); yylval = YYText(); }
-<comentario>"\n"                    { BEGIN(INITIAL); ; yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
+<comentario>"\n"                    { BEGIN(INITIAL); yylval = YYText(); return QUEBRA_COMENTARIO; }   // comnetário quebrado
 <comentario>.                       { /* IGONORE COMENTS */ }
 
 
@@ -72,14 +72,14 @@ WHITESPACE      [\t\r" "]
 
 \"                                  { BEGIN(str_const); yylval = YYText(); return ASPAS_DUPLAS; }
 <str_const>\"                       { BEGIN(INITIAL); yylval = YYText(); return ASPAS_DUPLAS; }
-<str_const>"\n"                     { BEGIN(INITIAL); ; yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
+<str_const>"\n"                     { BEGIN(INITIAL); yylval = YYText(); return QUEBRA_CAR; }   // const car quebrado
 <str_const>[^'"\n]+                 { yylval = YYText(); return CONST_STR; }
 
 {ID}                                { yylval = YYText(); return ID; }
 
 {DIGIT}+                            { yylval = YYText(); return CONST_INT; }
-{WHITESPACE}                        { yylval = YYText(); }
-"\n"                                { ; }   // conta linhas
+{WHITESPACE}                        { yylval = YYText(); return WHITES; }
+"\n"                                { }   // conta linhas
 <<EOF>>                             { yylval = YYText(); return TOK_EOF; }
 .                                   { yylval = YYText(); return UNKNOWN; }
 %%

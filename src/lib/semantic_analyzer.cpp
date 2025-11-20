@@ -175,7 +175,8 @@ void transverse_block(Node *node, ScopeStack *stack) {
 
 void transverse_assign_op(Node *node, ScopeStack *stack) {
     auto var = get_var(node, stack);
-    return transverse_expr(node->left, stack, var->get_type());
+    transverse_expr(node->left, stack, var->get_type());
+    return transverse(node->left, stack);
 }
 
 void transverse_func_call(Node *node, ScopeStack *stack) {

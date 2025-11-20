@@ -47,6 +47,7 @@ std::string tokenTypeToString(TokenType t) {
         case ASPAS_SIMPLES:      return "ASPAS_SIMPLES";
         case ASPAS_DUPLAS:       return "ASPAS_DUPLAS";
         case QUEBRA_CAR:         return "QUEBRA_CAR";
+        case WHITES:             return "";
     }
 
     return "";

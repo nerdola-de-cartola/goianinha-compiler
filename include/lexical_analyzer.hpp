@@ -18,7 +18,7 @@ public:
     LexicalAnalyzer(std::ifstream& file);
     ~LexicalAnalyzer();
     
-    std::tuple<TokenType, std::string, int>  get_next_token();
+    std::tuple<TokenType, std::string, int, int>  get_next_token();
     Node * get_ast();
 };
 

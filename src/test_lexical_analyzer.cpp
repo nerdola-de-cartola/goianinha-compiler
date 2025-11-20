@@ -7,20 +7,24 @@
 #define red "\033[31m"
 #define default "\033[0m"
 
-bool isError(TokenType token_type, std::string token_value, int token_line) {
+std::string posToString(int token_line, int token_col) {
+    return "(" + std::to_string(token_line) + ", " + std::to_string(token_col) + ")";
+}
+
+bool isError(TokenType token_type, std::string token_value, int token_line, int token_col) {
     if (token_type == UNKNOWN) {
-        std::cout << red << "Erro na lina " << token_line << ". Token não identificado: " << token_value << default << "\n";
+        std::cout << red << "Erro na posição " << posToString(token_line, token_col) << ". Token não identificado: " << token_value << default << "\n";
         return true;
     }
 
     if (token_type == QUEBRA_COMENTARIO) {
-        std::cout << red << "Erro na lina " << token_line << ". Comentário não termina" << default << "\n";
+        std::cout << red << "Erro na posição " << posToString(token_line, token_col) << ". Comentário não termina" << default << "\n";
         return true;
 
     }
 
     if (token_type == QUEBRA_CAR) {
-        std::cout << red << "Erro na lina " << token_line << ". Cadeia de caracteres não termina" << default << "\n";
+        std::cout << red << "Erro na posição " << posToString(token_line, token_col) << ". Cadeia de caracteres não termina" << default << "\n";
         return true;
     }
 
@@ -47,13 +51,13 @@ int main(int argc, char* argv[]) {
     LexicalAnalyzer* lexer = new LexicalAnalyzer(file);
 
     while (true) {
-        auto [token_type, token_value, token_line] = lexer->get_next_token();
+        auto [token_type, token_value, token_line, token_col] = lexer->get_next_token();
 
-        if (isError(token_type, token_value, token_line)) {
+        if (isError(token_type, token_value, token_line, token_col)) {
             continue;
         }
 
-        std::cout << tokenTypeToString(token_type) << " na linha " << token_line << ": " << token_value << "\n";
+        std::cout << tokenTypeToString(token_type) << " na posição " << posToString(token_line, token_col) <<  ": " << token_value << "\n";
 
         if (token_type == TOK_EOF) {
             break;

@@ -29,46 +29,61 @@ Node * LexicalAnalyzer::get_ast() {
     return root;
 }
 
-std::tuple<TokenType, std::string, int>  LexicalAnalyzer::get_next_token() {
+int last_line = 1;
+int last_length = 0;
+int token_col = 1; 
+int token_line = 1; 
+
+std::tuple<TokenType, std::string, int, int>  LexicalAnalyzer::get_next_token() {
     TokenType token_type = (TokenType) this->lexer.yylex();
     std::string token_value = std::string(yylval);
-    int token_line = this->lexer.lineno();
 
-    return {token_type, token_value, token_line};
+    last_line = token_line;
+    token_line = this->lexer.lineno();
+
+    if (token_line == last_line) {
+        token_col += last_length; 
+        //std::cout << "lasjdh" << std::endl;
+    } else {
+        token_col = 1;
+    }
+
+    last_length = token_value.length();
+
+    //std::cout << "(" << token_line << ", " << token_col << ")" << std::endl;
+
+    if(token_type == WHITES) {
+        std::cout << "white space " << token_value.length() << std::endl;
+        return get_next_token();
+    }
+
+    return {token_type, token_value, token_line, token_col};
 }
 
-int last_line = -1;
-int last_length = 0;
 
 int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
-    auto [token_type, token_value, token_line] = lexer->get_next_token();
+    auto [token_type, token_value, token_line, token_col] = lexer->get_next_token();
 
-    last_line = location->begin.line;
-    location->begin.line = token_line;
-
-    if (token_line != last_line) {
-        location->begin.column = 0; // New line
-    } else {
-        location->begin.column += last_length;
-    }
-    
-    last_length = token_value.length();
     if (location != nullptr) {
+        location->begin.line = token_line;
+        location->begin.column = token_col;
     }
+
+    //std::cout << location->begin.column << std::endl;
     
     if(token_type == UNKNOWN) {
-        show_error(lexical, *location, std::string("Token não identificado: " + token_value));
+        show_error(lexical, *location, std::string("Token não identificado: " + token_value), nullptr);
         return 1; 
     }
 
     if(token_type == QUEBRA_COMENTARIO) {
-        show_error(lexical, *location, std::string("Comentário não termina"));
+        show_error(lexical, *location, std::string("Comentário não termina"), nullptr);
         return 1; 
 
     }
 
     if(token_type == QUEBRA_CAR) {
-        show_error(lexical, *location, std::string("Cadeia de caracteres não termina"));
+        show_error(lexical, *location, std::string("Cadeia de caracteres não termina"), nullptr);
         return 1; 
 
     }
@@ -82,6 +97,6 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
 }
 
 void yy::Parser::error(const location_type& loc, const std::string& msg) {
-    show_error(syntactic, loc, msg);
+    show_error(syntactic, loc, msg, nullptr);
 }
 

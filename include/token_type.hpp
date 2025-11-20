@@ -46,7 +46,8 @@ enum TokenType {
     CONST_INT,
     CONST_CAR,
     CONST_STR,
-    ID
+    ID,
+    WHITES
 };
 
 std::string tokenTypeToString(TokenType t);
