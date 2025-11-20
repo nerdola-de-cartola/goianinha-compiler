@@ -54,18 +54,18 @@ public:
     Node *right;
     VariableTypes *var_type;
     std::string lexeme;
-    yy::location &loc;
+    yy::location loc;
 
 public:
-    Node(TypeNode type, yy::location &loc);
-    Node(TypeNode type, Node *left, yy::location &loc);
-    Node(TypeNode type, std::string lexeme, yy::location &loc);
-    Node(TypeNode type, Node *left, Node *right, yy::location &loc);
-    Node(TypeNode type, Node *left, std::string lexeme, yy::location &loc);
-    Node(TypeNode type, Node *left, VariableTypes var_type, yy::location &loc);
-    Node(TypeNode type, VariableTypes var_type, std::string lexeme, yy::location &loc);
-    Node(TypeNode type, Node *left, Node *right, VariableTypes var_type, yy::location &loc);
-    Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme, yy::location &loc);
+    Node(TypeNode type, yy::location loc);
+    Node(TypeNode type, Node *left, yy::location loc);
+    Node(TypeNode type, std::string lexeme, yy::location loc);
+    Node(TypeNode type, Node *left, Node *right, yy::location loc);
+    Node(TypeNode type, Node *left, std::string lexeme, yy::location loc);
+    Node(TypeNode type, Node *left, VariableTypes var_type, yy::location loc);
+    Node(TypeNode type, VariableTypes var_type, std::string lexeme, yy::location loc);
+    Node(TypeNode type, Node *left, Node *right, VariableTypes var_type, yy::location loc);
+    Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme, yy::location loc);
     ~Node();
 
     void traverse_prev();

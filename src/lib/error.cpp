@@ -19,13 +19,30 @@ std::string errorTypeToString(const ErrorType t) {
 }
 
 void show_error(ErrorType type, const yy::location &loc, const std::string &msg, ScopeStack *stack) {
+    std::string line_msg;
+    
+    if (loc.begin.line != loc.end.line) {
+        line_msg = " da linha "
+            + std::to_string(loc.begin.line)
+            + " coluna "
+            + std::to_string(loc.begin.column)
+            + " até a linha "
+            + std::to_string(loc.end.line)
+            + " coluna "
+            + std::to_string(loc.end.column);
+     } else {
+        line_msg = " na linha "
+            + std::to_string(loc.begin.line)
+            + ", colunas "
+            + std::to_string(loc.begin.column)
+            + " - "
+            + std::to_string(loc.end.column);
+     }
+
     std::cerr
             << red 
             << errorTypeToString(type)
-            << " na linha "
-            << loc.begin.line
-            << ", coluna "
-            << loc.begin.column
+            << line_msg
             << ": "
             << msg
             << default

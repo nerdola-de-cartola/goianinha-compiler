@@ -21,7 +21,8 @@ std::string Variable::typeToString(VariableTypes type) {
     switch (type) {
         case INT: return "int";
         case CAR: return "car";
-        case TNULL: return "TNULL";
+        case STR: return "str";
+        case TNULL: return "none";
     }
     
     return "";

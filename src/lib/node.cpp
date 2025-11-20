@@ -2,31 +2,31 @@
 #include "variable.hpp"
 #include <iostream>
 
-Node::Node(TypeNode type, yy::location &loc)
+Node::Node(TypeNode type, yy::location loc)
     : type(type), left(nullptr), right(nullptr), var_type(nullptr), lexeme(""), loc(loc) {}
 
-Node::Node(TypeNode type, Node *left, Node *right, yy::location &loc)
+Node::Node(TypeNode type, Node *left, Node *right, yy::location loc)
     : type(type), left(left), right(right), var_type(nullptr), lexeme(""), loc(loc) {}
 
-Node::Node(TypeNode type, Node *left, yy::location &loc)
+Node::Node(TypeNode type, Node *left, yy::location loc)
     : type(type), left(left), right(nullptr), var_type(nullptr), lexeme(""), loc(loc) {}
 
-Node::Node(TypeNode type, std::string lexeme, yy::location &loc)
+Node::Node(TypeNode type, std::string lexeme, yy::location loc)
     : type(type), left(nullptr), right(nullptr), var_type(nullptr), lexeme(lexeme), loc(loc) {}
 
-Node::Node(TypeNode type, Node *left, std::string lexeme, yy::location &loc)
+Node::Node(TypeNode type, Node *left, std::string lexeme, yy::location loc)
     : type(type), left(left), right(nullptr), var_type(nullptr), lexeme(lexeme), loc(loc) {}
 
-Node:: Node(TypeNode type, Node *left, Node *right, VariableTypes var_type, yy::location &loc)
+Node:: Node(TypeNode type, Node *left, Node *right, VariableTypes var_type, yy::location loc)
     : type(type), left(left), right(right), var_type(new VariableTypes(var_type)), lexeme(""), loc(loc) {}
 
-Node:: Node(TypeNode type, Node *left, VariableTypes var_type, yy::location &loc)
+Node:: Node(TypeNode type, Node *left, VariableTypes var_type, yy::location loc)
     : type(type), left(left), right(nullptr), var_type(new VariableTypes(var_type)), lexeme(""), loc(loc) {}
 
-Node:: Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme, yy::location &loc)
+Node:: Node(TypeNode type, Node *left, VariableTypes var_type, std::string lexeme, yy::location loc)
     : type(type), left(left), right(nullptr), var_type(new VariableTypes(var_type)), lexeme(lexeme), loc(loc) {}
 
-Node:: Node(TypeNode type, VariableTypes var_type, std::string lexeme, yy::location &loc)
+Node:: Node(TypeNode type, VariableTypes var_type, std::string lexeme, yy::location loc)
     : type(type), left(nullptr), right(nullptr), var_type(new VariableTypes(var_type)), lexeme(lexeme), loc(loc) {}
 
 Node::~Node() {

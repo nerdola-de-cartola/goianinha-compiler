@@ -53,7 +53,7 @@ std::tuple<TokenType, std::string, int, int>  LexicalAnalyzer::get_next_token() 
     //std::cout << "(" << token_line << ", " << token_col << ")" << std::endl;
 
     if(token_type == WHITES) {
-        std::cout << "white space " << token_value.length() << std::endl;
+        //std::cout << "white space " << token_value.length() << std::endl;
         return get_next_token();
     }
 
@@ -67,6 +67,7 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
     if (location != nullptr) {
         location->begin.line = token_line;
         location->begin.column = token_col;
+        location->end = location->begin;
     }
 
     //std::cout << location->begin.column << std::endl;
@@ -87,10 +88,13 @@ int yylex(void *lval, yy::location *location, LexicalAnalyzer *lexer) {
         return 1; 
 
     }
+
+    yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
     
     if (token_type == CONST_INT || token_type == CONST_CAR || token_type == CONST_STR || token_type == ID) {
-        yy::Parser::value_type *vl = (yy::Parser::value_type *) lval;
         vl->emplace<std::string>(token_value); // Provides token_value to Bison
+    } else {
+        vl->emplace<yy::location>(*location);
     }
 
     return token_type;

@@ -93,12 +93,8 @@ VariableTypes get_recursive_node_type(Node *node, ScopeStack *stack) {
 
         if (lt != rt) {
             std::cout << node->toString() << std::endl;
-            show_error(
-                semantic,
-                node->loc,
-                "different types in operation",
-                stack
-            );
+            std::string msg = "different types " + Variable::typeToString(lt) + " and " + Variable::typeToString(rt) + " in operation";
+            show_error(semantic, node->loc, msg, stack);
         }
 
 
@@ -116,12 +112,8 @@ void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type)
 
     if(current_type != expected_type) {
         std::cout << node->toString() << std::endl;
-        return show_error(
-            semantic,
-            node->loc,
-            "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type),
-            stack
-        );
+        std::string msg = "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type); 
+        return show_error(semantic, node->loc, msg, stack);
     }
 }
 
@@ -131,19 +123,16 @@ void add_all_parameters(Node *node, Function &f) {
     if(node->type == param) {
         Variable var = Variable(node->lexeme, *node->var_type);
         Result r = f.add_parameter(var);
-        if (r == ERROR) show_error(
-            semantic,
-            node->loc,
-            "repeated parameter name " + var.get_name() + " in function " + f.get_name()
-        );
+        if (r == ERROR) {
+            std::cout << node->toString() << std::endl;
+            std::string msg = "repeated parameter name " + var.get_name() + " in function " + f.get_name(); 
+            show_error(semantic, node->loc, msg);
+        }
     }
 
     add_all_parameters(node->left, f);
     add_all_parameters(node->right, f);
 }
-
-//std::cout << "oi" << std::endl;
-//std::cout << "ola" << std::endl;
 
 void transverse_function_declaration(Node *node, ScopeStack *stack) {
     auto f1 = node;
@@ -152,7 +141,10 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     auto f = Function(f1->lexeme, *f1->var_type);
     add_all_parameters(list_params, f);
     Result r = stack->add_function(f);
-    if(r == ERROR) show_error(semantic, node->loc, "repeated function name " + f.get_name(), stack);
+    if(r == ERROR) {
+        std::cout << node->toString() << std::endl;
+        show_error(semantic, node->loc, "repeated function name " + f.get_name(), stack);
+    }
     
     stack->push();
     for (auto &param : f) { // Add function parameter to the stack
@@ -188,8 +180,6 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
     bool finished = false;
 
     while (i >= 0) {
-        //std::cout << "oi" << std::endl;
-        //std::cout << "ola" << std::endl;
         if (n == nullptr) break;
 
         if (n->type != list_exp) {
@@ -204,21 +194,21 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
         n = n->left;
     }
 
-    if (i != -1)
-        show_error(
-            semantic,
-            node->loc,
-            "missing parameter " + params[params.size() - i - 1].get_name() + " on call to " + f->get_name(),
-            stack
-        );
+    if (i != -1) {
+        std::cout << node->toString() << std::endl;
+        std::string msg = "missing parameter " + params[params.size() - i - 1].get_name() + " on call to " + f->get_name();
+        show_error(semantic, node->loc, msg, stack);
+    }
 
-    if (!finished && !(params.size() == 0 && n == nullptr))
+    if (!finished && !(params.size() == 0 && n == nullptr)) {
+        std::cout << node->toString() << std::endl;
         show_error(
             semantic,
             node->loc,
             "extra parameter on call to " + f->get_name(),
             stack
         );
+    }   
 }
 
 void transverse_loop(Node *node, ScopeStack *stack) {
