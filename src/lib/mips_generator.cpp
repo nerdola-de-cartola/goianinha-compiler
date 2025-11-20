@@ -17,6 +17,8 @@ auto def_code =
         "    li   $v0, 10\n"
         "    syscall\n";
 
+unsigned long int COND_COUNT = 0;
+
 void transverse_code(Node *node, ScopeStack *stack);
 std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack);
 
@@ -48,7 +50,19 @@ std::string get_op_from_node(Node *node) {
     return "";
 }
 
+void save_register(std::string reg) {
+    generator.add_operation("sw " + reg + ", 0($sp)"); // Save reg into the top of the stack
+    generator.add_operation("addiu $sp, $sp, -4"); // Push stack
+}
+
+void load_register(std::string reg) {
+    generator.add_operation("lw " + reg + ", 4($sp)"); // Load the top of the stack into reg
+    generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
+}
+
 int generate_expr(Node *node, ScopeStack *stack) {
+    if(node == nullptr) return 1;
+
     if(node->type == number) {
         generator.add_operation("li $s0, " + node->lexeme);
         return 0;
@@ -62,11 +76,9 @@ int generate_expr(Node *node, ScopeStack *stack) {
     }
 
     generate_expr(node->left, stack);
-    generator.add_operation("sw $s0, 0($sp)"); // Save left result on stack
-    generator.add_operation("addiu $sp, $sp, -4"); // Push stack
+    save_register("$s0");
     generate_expr(node->right, stack);
-    generator.add_operation("lw $t1, 4($sp)"); // Load left result on t1
-    generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
+    load_register("$t1");
     std::string op = get_op_from_node(node);
     generator.add_operation(op + " $s0, $t1, $s0"); // left + right
     
@@ -82,16 +94,14 @@ std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack)
 
 void generate_assign_op(Node *node, ScopeStack *stack) {
     auto [var, scope, pos] = get_var_on_stack(node, stack);
-    std::cout << pos << std::endl;
+    //std::cout << pos << std::endl;
     generate_expr(node->left, stack);
     std::string op = "sw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
     generator.add_operation(op);
 }
 
-void generate_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
-    if(node == nullptr) {
-        return;
-    }
+void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes type) {
+    if(node == nullptr) return;
 
     if(node->type == list_decl_var) {
         type = *node->var_type;
@@ -101,8 +111,8 @@ void generate_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
         Result r = stack->add_variable(Variable(node->lexeme, type));
     }
 
-    generate_decl_var(node->left, stack, type);
-    generate_decl_var(node->right, stack, type);
+    recursive_variable_declaration(node->left, stack, type);
+    recursive_variable_declaration(node->right, stack, type);
 }
 
 void generate_write_cmd(Node *node, ScopeStack *stack) {
@@ -129,28 +139,62 @@ void generate_prog(Node *node, ScopeStack *stack) {
     generator.add_operation("syscall");
 }
 
+void generate_decl_var(Node *node, ScopeStack *stack) {
+    recursive_variable_declaration(node, stack, *node->var_type);
+    int count = stack->get_variable_count();
+    int frame_size = 4 + count*4;
+    generator.add_operation("sw $fp, ($sp)");   // Save old FP on stack top
+    generator.add_operation("addiu $sp, $sp, " + std::to_string(-frame_size)); // Push stack
+    generator.add_operation("move $fp, $sp");   // Copy SP to FP
+}
+
+std::tuple<std::string, std::string, std::string> get_cond_labels() {
+    std::string then_label = "then" + std::to_string(COND_COUNT);
+    std::string else_label = "else" + std::to_string(COND_COUNT);
+    std::string end_label = "end_if" + std::to_string(COND_COUNT);
+    COND_COUNT++;
+    return {then_label, else_label, end_label};
+}
+
+void generate_conditions(Node *node, ScopeStack *stack) {
+    auto condition = node->left;
+    auto blocks = node->right;
+
+    generate_expr(condition->left, stack);
+    save_register("$s0");
+    generate_expr(condition->right, stack);
+    load_register("$t1");
+    // Right on s0 and left on t1
+    
+    auto [then_label, else_label, end_label] = get_cond_labels();
+
+    if(blocks->type == block) { // Only if
+        generator.add_operation("beq $s0, $t1, " + then_label);
+        generator.add_operation(then_label + ":");
+        transverse_code(blocks, stack);
+    } else { // If and else
+        generator.add_operation("beq $s0, $t1, " + then_label);
+        generator.add_operation(else_label + ":");
+        transverse_code(blocks->right, stack); // Else
+        generator.add_operation("b " + end_label);
+        generator.add_operation(then_label + ":");
+        transverse_code(blocks->left, stack); // Then
+        generator.add_operation(end_label + ":");
+    }
+
+
+
+}
+
+
 void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
     if (node->type == prog) return generate_prog(node, stack);
-
-    if (node->type == func1) {
-        generator.functions.push_back(node->lexeme);
-    }
-
-    if (node->type == list_decl_var) {
-        generate_decl_var(node, stack, *node->var_type);
-        int count = stack->get_variable_count();
-        int frame_size = 4 +count*4;
-        generator.add_operation("sw $fp, ($sp)");   // Save old FP on stack top
-        generator.add_operation("addiu $sp, $sp, " + std::to_string(-frame_size)); // Push stack
-        generator.add_operation("move $fp, $sp");   // Copy SP to FP
-
-        return;
-    }
-
+    if (node->type == list_decl_var) return generate_decl_var(node, stack);
     if (node->type == assign_op) return generate_assign_op(node, stack);
     if (node->type == write_cmd) return generate_write_cmd(node, stack);
+    if (node->type == if_cond) return generate_conditions(node, stack);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);

@@ -1,0 +1,12 @@
+programa {
+    int i;
+    i = 1;
+
+    se (i == 1) entao {
+        escreva "oi\n";
+    } senao {
+        escreva "ola\n";
+    }
+
+    escreva "fim\n";
+}
