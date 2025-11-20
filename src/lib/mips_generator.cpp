@@ -31,6 +31,23 @@ int MipsGenerator::add_operation(std::string op) {
 
 auto generator = MipsGenerator();
 
+std::string get_op_from_node(Node *node) {
+    switch (node->type) {
+        case add_op:
+            return "add";
+        case sub_op:
+            return "sub";
+        case mul_op:
+            return "mul";
+        case div_op:
+            return "div";
+        default:
+            return "";
+    }
+
+    return "";
+}
+
 int generate_expr(Node *node, ScopeStack *stack) {
     if(node->type == number) {
         generator.add_operation("li $s0, " + node->lexeme);
@@ -39,19 +56,19 @@ int generate_expr(Node *node, ScopeStack *stack) {
 
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
-        std::string op = "lw $s0, " + std::to_string(4 + pos * 4) + "($sp)";
+        std::string op = "lw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
         generator.add_operation(op); // Load var on s0
+        return 0;
     }
 
-    if(node->type == add_op) {
-        generate_expr(node->left, stack);
-        generator.add_operation("sw $s0, 0($sp)"); // Save left result on stack
-        generator.add_operation("addiu $sp, $sp, -4"); // Push stack
-        generate_expr(node->right, stack);
-        generator.add_operation("lw $t1, 4($sp)"); // Load left result on t1
-        generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
-        generator.add_operation("add $s0, $s0, $t1"); // Add left and right results
-    }
+    generate_expr(node->left, stack);
+    generator.add_operation("sw $s0, 0($sp)"); // Save left result on stack
+    generator.add_operation("addiu $sp, $sp, -4"); // Push stack
+    generate_expr(node->right, stack);
+    generator.add_operation("lw $t1, 4($sp)"); // Load left result on t1
+    generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
+    std::string op = get_op_from_node(node);
+    generator.add_operation(op + " $s0, $t1, $s0"); // left + right
     
     return 0;
 }
@@ -67,7 +84,7 @@ void generate_assign_op(Node *node, ScopeStack *stack) {
     auto [var, scope, pos] = get_var_on_stack(node, stack);
     std::cout << pos << std::endl;
     generate_expr(node->left, stack);
-    std::string op = "sw $s0, " + std::to_string(4 + pos * 4) + "($sp)";
+    std::string op = "sw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
     generator.add_operation(op);
 }
 
@@ -124,7 +141,11 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == list_decl_var) {
         generate_decl_var(node, stack, *node->var_type);
         int count = stack->get_variable_count();
-        generator.add_operation("addiu $sp, $sp, " + std::to_string(-(count*4)));
+        int frame_size = 4 +count*4;
+        generator.add_operation("sw $fp, ($sp)");   // Save old FP on stack top
+        generator.add_operation("addiu $sp, $sp, " + std::to_string(-frame_size)); // Push stack
+        generator.add_operation("move $fp, $sp");   // Copy SP to FP
+
         return;
     }
 
