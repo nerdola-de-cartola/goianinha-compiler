@@ -17,6 +17,7 @@ auto def_code =
         "    li   $v0, 10\n"
         "    syscall\n";
 
+void transverse_code(Node *node, ScopeStack *stack);
 
 MipsGenerator::MipsGenerator() {}
 MipsGenerator::~MipsGenerator() {}
@@ -26,7 +27,6 @@ int MipsGenerator::add_operation(std::string op) {
     operations.push_back(op);
     return 0;
 }
-
 
 auto generator = MipsGenerator();
 
@@ -68,28 +68,33 @@ void generate_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
 }
 
 void generate_write_cmd(Node *node, ScopeStack *stack) {
-    generate_expr(node->left, stack);
-    generator.add_operation("move $a0, $s0");
-    generator.add_operation("li $v0, 1");
+    if(node->left->type == const_string) {
+        generator.data_segments.push_back(node->left->lexeme);
+        auto index = generator.data_segments.size() - 1;
+        std::string op = "la $a0, msg" + std::to_string(index);
+        generator.add_operation(op);
+        generator.add_operation("li $v0, 4");
+    } else {
+        generate_expr(node->left, stack);
+        generator.add_operation("move $a0, $s0");
+        generator.add_operation("li $v0, 1");
+    }
+
     generator.add_operation("syscall");
 }
 
+void generate_prog(Node *node, ScopeStack *stack) {
+    generator.add_operation("main:");
+    transverse_code(node->left, stack);
+    transverse_code(node->right, stack);
+    generator.add_operation("li $v0, 10");
+    generator.add_operation("syscall");
+}
 
 void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
-    if (node->type == const_string) {
-        generator.data_segments.push_back(node->lexeme);
-    }
-
-    if (node->type == prog) {
-        generator.add_operation("main:");
-        transverse_code(node->left, stack);
-        transverse_code(node->right, stack);
-        generator.add_operation("li $v0, 10");
-        generator.add_operation("syscall");
-        return;
-    }
+    if (node->type == prog) return generate_prog(node, stack);
 
     if (node->type == func1) {
         generator.functions.push_back(node->lexeme);
