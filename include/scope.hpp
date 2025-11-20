@@ -19,6 +19,9 @@ public:
 
     Result add_variable(Variable var);
     Variable* get_variable(std::string name);
+    Variable* get_variable(std::string name, int *pos);
+
+    int get_variable_count();
 
     std::string toString();
 };

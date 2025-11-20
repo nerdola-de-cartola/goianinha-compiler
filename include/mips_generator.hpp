@@ -10,6 +10,9 @@ private:
 public:
     std::vector<std::string> data_segments;
     std::vector<std::string> functions;
+    int current_function;
+    std::vector<std::string> operations;
+    int add_operation(std::string op);
     MipsGenerator();
     ~MipsGenerator();
 };

@@ -38,7 +38,6 @@ Function *get_func(Node *node, ScopeStack *stack) {
 
 void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node == nullptr) {
-        //std::cout << stack->toString() << std::endl;
         return;
     }
 

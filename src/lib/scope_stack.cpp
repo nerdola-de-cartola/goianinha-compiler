@@ -53,6 +53,31 @@ Variable* ScopeStack::get_variable(std::string name) {
     return var;
 }
 
+Variable* ScopeStack::get_variable(std::string name, int *scope, int *pos) {
+    Variable *var = nullptr;
+
+    if (this->scopes.empty()) return var;
+
+    // Reverse iteration
+    for (long int i = this->scopes.size()-1; i >= 0; i--) {
+        // std::cout<<i<<"\n";
+        var = this->scopes[i].get_variable(name, pos);
+
+        if (var != nullptr) {
+            *scope = i;
+            return var;
+        }
+    }
+
+    return var;
+}
+
+int ScopeStack::get_variable_count() {
+    if (this->scopes.empty()) return ERROR; //ERROR
+    return this->scopes.back().get_variable_count();
+}
+
+
 std::string ScopeStack::toString() {
     std::string sep = "----------------------\n";
     std::string str = "";

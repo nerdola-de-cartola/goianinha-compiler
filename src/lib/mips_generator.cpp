@@ -1,4 +1,6 @@
 #include "mips_generator.hpp"
+#include "error.hpp"
+#include "scope_stack.hpp"
 #include <fstream>
 #include <unistd.h>   // for mkstemp, close, unlink
 #include <cstdlib>    // for system()
@@ -19,9 +21,61 @@ auto def_code =
 MipsGenerator::MipsGenerator() {}
 MipsGenerator::~MipsGenerator() {}
 
+int MipsGenerator::add_operation(std::string op) {
+    op.append("\n");
+    operations.push_back(op);
+    return 0;
+}
+
+
 auto generator = MipsGenerator();
 
-void transverse_code(Node *node) {
+int generate_expr(Node *node, ScopeStack *stack) {
+    if(node->type == number) {
+        generator.add_operation("li $s0, " + node->lexeme);
+        return 0;
+    }
+    
+    return 0;
+}
+
+void generate_assign_op(Node *node, ScopeStack *stack) {
+    int *pos = new int;
+    int *scope = new int;
+    auto var = stack->get_variable(node->lexeme, scope, pos);
+    generate_expr(node->left, stack);
+    std::string op = "sw $s0, " + std::to_string(*pos * 4) + "($sp)";
+    generator.add_operation(op);
+    delete pos;
+    delete scope;
+}
+
+void generate_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
+    if(node == nullptr) {
+        return;
+    }
+
+    if(node->type == list_decl_var) {
+        type = *node->var_type;
+    }
+
+    if(node->type == var) {
+        Result r = stack->add_variable(Variable(node->lexeme, type));
+    }
+
+    generate_decl_var(node->left, stack, type);
+    generate_decl_var(node->right, stack, type);
+}
+
+void generate_write_cmd(Node *node, ScopeStack *stack) {
+    generate_expr(node->left, stack);
+    generator.add_operation("move $a0, $s0");
+    generator.add_operation("li $v0, 1");
+    generator.add_operation("syscall");
+}
+
+
+void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
     if (node->type == const_string) {
@@ -29,15 +83,30 @@ void transverse_code(Node *node) {
     }
 
     if (node->type == prog) {
-        generator.functions.push_back("main");
+        generator.add_operation("main:");
+        transverse_code(node->left, stack);
+        transverse_code(node->right, stack);
+        generator.add_operation("li $v0, 10");
+        generator.add_operation("syscall");
+        return;
     }
 
     if (node->type == func1) {
         generator.functions.push_back(node->lexeme);
     }
 
-    transverse_code(node->left);
-    transverse_code(node->right);
+    if (node->type == list_decl_var) {
+        generate_decl_var(node, stack, *node->var_type);
+        int count = stack->get_variable_count();
+        generator.add_operation("addiu $sp, $sp, " + std::to_string(-(count*4)));
+        return;
+    }
+
+    if (node->type == assign_op) return generate_assign_op(node, stack);
+    if (node->type == write_cmd) return generate_write_cmd(node, stack);
+
+    transverse_code(node->left, stack);
+    transverse_code(node->right, stack);
 }
 
 
@@ -57,8 +126,8 @@ std::string text_section() {
     std::string buffer = ".text\n";
     buffer += ".globl main\n";
 
-    for (auto &func : generator.functions) {
-        buffer += func + ":\n";
+    for (auto &op : generator.operations) {
+        buffer += op;
     }
 
     return buffer;
@@ -66,7 +135,10 @@ std::string text_section() {
 
 std::string generate_code(Node *node) {
     std::string buffer;
-    transverse_code(node);
+    ScopeStack stack = ScopeStack();
+    stack.push();
+    transverse_code(node, &stack);
+    stack.pop();
     buffer += data_section();
     buffer += text_section();
 

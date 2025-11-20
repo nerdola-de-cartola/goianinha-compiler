@@ -49,6 +49,31 @@ Variable* Scope::get_variable(std::string name) {
     return nullptr;      // not found
 }
 
+Variable *Scope::get_variable(std::string name, int *pos) {
+    if (pos == nullptr) {
+        std::cerr << "Ponteiro inválido para função Variable *Scope::get_variable(std::string name, int *pos)" << std::endl;
+        exit(1);
+    }
+
+    auto it = std::find_if(variables.begin(), variables.end(),
+        [&](Variable &var) {
+            return var.get_name() == name;
+        });
+
+    if (it != variables.end()) {
+        *pos = std::distance(variables.begin(), it); // posição no vetor
+        return &(*it); // ponteiro para o elemento
+    }
+
+    *pos = -1; // não encontrada
+    return nullptr;
+}
+
+int Scope::get_variable_count() {
+    return variables.size();
+}
+
+
 std::string Scope::toString() {
     std::string fs = "";
     std::string vs = "";
