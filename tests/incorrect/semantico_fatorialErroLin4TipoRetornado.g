@@ -1,7 +1,6 @@
 /* Este e um programa com ERRO */
 int fatorial(int n){
-	se (n==0)
-	entao
+	se (n==0) entao
 		retorne 'a'; /*Erro de tipo*/
 	senao
 		retorne n* fatorial(n-1);

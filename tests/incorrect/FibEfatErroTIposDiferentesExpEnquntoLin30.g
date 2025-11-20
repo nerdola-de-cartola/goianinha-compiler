@@ -1,5 +1,4 @@
-/* Este é um programa em Goianinha que calcula que possui varias funcoes misturadas com
-varias declaracoes de variaveis globais. */
+/* Este é um programa em Goianinha que calcula que possui varias funcoes misturadas com varias declaracoes de variaveis globais. */
 
 int fatorial(int n){
 	se (n==0)
@@ -8,40 +7,41 @@ int fatorial(int n){
 	senao
 		retorne n* fatorial(n-1);
 }
+
 int somaFunc; 
 
-
-
-int fibonacci 
-(int seq){
-	se(seq==0)
+int fibonacci (int n) {
+	se(n==0)
 	entao   
 		retorne 0;
-	senão 
-		se (seq==1)
+	senao 
+		se (n==1) entao
 			retorne 1;
 		senao
 			retorne fibonacci(n-1)+fibonacci(n-2);
 }
+
 int  fat, fib;
+
+
 programa {
-int n;
-n = 1-0;
-enquanto (n<'0') execute { */ERRO! COMPARANDO INT(N) COM CONSTANTE CAR*/
-       escreva "digite um numero";
-       novalinha;
-       leia n;    
-}	
+	int n;
+	n = 1-0;
+	enquanto (n<'0') execute { */ERRO! COMPARANDO INT(N) COM CONSTANTE CAR*/
+		escreva "digite um numero";
+		novalinha;
+		leia n;    
+	}	
     fat=fatorial(n);
 	escreva "O fatorial de ";
 	escreva n;
-        escreva " e: ";
+	escreva " e: ";
 	escreva fat;
 	novalinha;
 	fib=fibonacci(n);
 	escreva "Fibonacci de ";
 	escreva n;
-	escreva e: ";
+	escreva "e: ";
 	escreva fib;
 	novalinha;
 	escreva "A soma do valor do fatorial com o valor de fibonacci e: ";

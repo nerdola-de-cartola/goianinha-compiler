@@ -22,7 +22,7 @@ programa {
 			escreva conceito;
 			novalinha;
 		
-		senao{
+		senao {
 			 se (nota<9)
 			 entao{
 				car conceito;
