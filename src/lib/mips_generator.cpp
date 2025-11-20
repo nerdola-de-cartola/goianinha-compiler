@@ -35,6 +35,16 @@ int generate_expr(Node *node, ScopeStack *stack) {
         generator.add_operation("li $s0, " + node->lexeme);
         return 0;
     }
+
+    if(node->type == add_op) {
+        generate_expr(node->left, stack);
+        generator.add_operation("sw $s0, 0($sp)"); // Save left result on stack
+        generator.add_operation("addiu $sp, $sp, -4"); // Push stack
+        generate_expr(node->right, stack);
+        generator.add_operation("lw $t1, 4($sp)"); // Load left result on t1
+        generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
+        generator.add_operation("add $s0, $s0, $t1"); // Add left and right results
+    }
     
     return 0;
 }

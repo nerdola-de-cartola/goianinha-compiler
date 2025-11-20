@@ -1,0 +1,14 @@
+programa {
+    int i, j, n;
+    n = 42 + 7 + 1 + 3;
+    
+    escreva n;
+    escreva "\n";
+
+    escreva i;
+    escreva "\n";
+
+    escreva j;
+    escreva "\n";
+
+}
