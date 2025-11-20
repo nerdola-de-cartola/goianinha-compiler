@@ -51,7 +51,7 @@ std::tuple<TokenType, std::string, int, int>  LexicalAnalyzer::get_next_token() 
     last_length = token_value.length();
 
     if(token_type == WHITES) {
-        std::cout << "white space " << token_value << token_value.length() << std::endl;
+        //std::cout << "white space " << token_value << token_value.length() << std::endl;
         return get_next_token();
     }
 

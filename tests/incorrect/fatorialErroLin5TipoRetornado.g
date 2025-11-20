@@ -2,9 +2,9 @@
 car fatorial(int n){
 	se (n==0)
 	entao
-		retorne 1;
+		retorne 1; /* Erro de tipo */
 	senao
-		retorne n* fatorial(n-1); /* Erro de tipo*/
+		retorne n * fatorial(n-1); /* Erro de tipo */
 }
 
 programa {

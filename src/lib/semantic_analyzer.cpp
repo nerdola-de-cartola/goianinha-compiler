@@ -5,6 +5,8 @@
 #include "function.hpp"
 #include <iostream>
 
+Function *CURRENT_FUNCTION = nullptr;
+
 void transverse(Node *node, ScopeStack *stack);
 void transverse_func_call(Node *node, ScopeStack *stack);
 void transverse_block(Node *node, ScopeStack *stack, Function *f);
@@ -149,7 +151,9 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
         show_error(semantic, node->loc, "repeated function name " + f.get_name(), stack);
     }
     
+    CURRENT_FUNCTION = &f;
     transverse_block(f2->right, stack, &f);
+    CURRENT_FUNCTION = nullptr;
 }
 
 void transverse_block(Node *node, ScopeStack *stack, Function *f) {
@@ -223,6 +227,16 @@ void transverse_condition(Node *node, ScopeStack *stack) {
     return transverse(node->right, stack);
 }
 
+void transverse_return(Node *node, ScopeStack *stack) {
+    
+    if (CURRENT_FUNCTION == nullptr) 
+    return transverse(node->left, stack);
+    
+    //std::cout << CURRENT_FUNCTION->toString() << std::endl;
+    auto type = CURRENT_FUNCTION->get_return_type();
+    return transverse_expr(node->left, stack, type);
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -233,6 +247,7 @@ void transverse(Node *node, ScopeStack *stack) {
     if (node->type == func_call) return transverse_func_call(node, stack);
     if (node->type == loop) return transverse_loop(node, stack);
     if (node->type == if_cond) return transverse_condition(node, stack);
+    if (node->type == return_cmd) transverse_return(node, stack);
 
 
     if (isOperation(node)) {
