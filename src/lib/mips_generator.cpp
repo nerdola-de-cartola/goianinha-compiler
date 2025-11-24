@@ -168,21 +168,18 @@ void generate_conditions(Node *node, ScopeStack *stack) {
     
     auto [then_label, else_label, end_label] = get_cond_labels();
 
-    if(blocks->type == block) { // Only if
-        generator.add_operation("beq $s0, $t1, " + then_label);
-        generator.add_operation("b " + end_label);
-        generator.add_operation(then_label + ":");
-        transverse_code(blocks, stack);
-        generator.add_operation(end_label + ":");
-    } else { // If and else
-        generator.add_operation("beq $s0, $t1, " + then_label);
+    generator.add_operation("beq $s0, $t1, " + then_label);
+
+    if(blocks->type != block) { // If and else
         generator.add_operation(else_label + ":");
         transverse_code(blocks->right, stack); // Else
-        generator.add_operation("b " + end_label);
-        generator.add_operation(then_label + ":");
-        transverse_code(blocks->left, stack); // Then
-        generator.add_operation(end_label + ":");
+        blocks = blocks->left; // Put then block on blocks variable
     }
+
+    generator.add_operation("b " + end_label);
+    generator.add_operation(then_label + ":");
+    transverse_code(blocks, stack);
+    generator.add_operation(end_label + ":");
 }
 
 void generate_new_line(Node *node, ScopeStack *stack) {

@@ -1,6 +1,6 @@
 programa {
     int i;
-    i = 0;
+    i = 1;
 
     escreva i;
     novalinha;
@@ -11,6 +11,12 @@ programa {
 
     se (i == 1) entao {
         escreva "oi\n";
+        i = 0;
+        se (i == 1) entao {
+            escreva "oi\n";
+        } senao {
+            escreva "ola\n";
+        }
     } senao {
         escreva "ola\n";
     }
