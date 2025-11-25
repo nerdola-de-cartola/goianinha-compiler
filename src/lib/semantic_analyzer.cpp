@@ -144,6 +144,7 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     auto list_params = f2->left;
     auto f = Function(f1->lexeme, *f1->var_type);
     add_all_parameters(list_params, f);
+    
     Result r = stack->add_function(f);
     if(r == ERROR) {
         std::cout << node->toString() << std::endl;

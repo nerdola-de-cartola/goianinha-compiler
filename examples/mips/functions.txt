@@ -1,7 +1,18 @@
-int f() {}
+int f(int n, int j, int k, int l) {
+    escreva n; novalinha;
+    escreva j; novalinha;
+    escreva k; novalinha;
+    escreva l; novalinha;
+    escreva "f\n";
+}
+
 car fib() {}
 int factorial() {}
 
 programa {
-    escreva "Ola mundo\n";
+    int i;
+    i = 55;
+    f(6, 7, 67, 667);
+    escreva "main\n";
+    escreva i; novalinha;
 }

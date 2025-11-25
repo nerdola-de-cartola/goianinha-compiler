@@ -19,8 +19,10 @@ auto def_code =
 
 unsigned long int COND_COUNT = 0;
 unsigned long int LOOP_COUNT = 0;
+Function *CURRENT_FUNCTION = nullptr;
 
 void transverse_code(Node *node, ScopeStack *stack);
+void generate_block(Node *node, ScopeStack *stack, Function *f);
 std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack);
 
 MipsGenerator::MipsGenerator() {}
@@ -76,7 +78,20 @@ int generate_expr(Node *node, ScopeStack *stack) {
 
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
-        std::string op = "lw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
+        bool isParam = false;
+        int offset;
+
+        if(CURRENT_FUNCTION != nullptr) {
+            isParam = CURRENT_FUNCTION->get_parameter(var->get_name()) != nullptr;
+        }
+
+        if (isParam) { // Function param
+            // TODO
+        } else { // Local variable
+            // TODO
+        }
+        
+        std::string op = "lw $s0, " + std::to_string(offset) + "($fp)";
         generator.add_operation(op); // Load var on s0
         return 0;
     }
@@ -114,7 +129,7 @@ void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes
     }
 
     if(node->type == var) {
-        Result r = stack->add_variable(Variable(node->lexeme, type));
+        stack->add_variable(Variable(node->lexeme, type));
     }
 
     recursive_variable_declaration(node->left, stack, type);
@@ -150,9 +165,10 @@ void generate_write_cmd(Node *node, ScopeStack *stack) {
 }
 
 void generate_prog(Node *node, ScopeStack *stack) {
-    generator.add_operation("main:");
     transverse_code(node->left, stack);
-    transverse_code(node->right, stack);
+
+    generator.add_operation("main:");
+    generate_block(node->right, stack, nullptr);
     generator.add_operation("li $v0, 10");
     generator.add_operation("syscall");
 }
@@ -161,7 +177,7 @@ void generate_decl_var(Node *node, ScopeStack *stack) {
     recursive_variable_declaration(node, stack, *node->var_type);
     int count = stack->get_variable_count();
     int frame_size = 4 + count*4;
-    generator.add_operation("sw $fp, ($sp)");   // Save old FP on stack top
+    generator.add_operation("sw $fp, 0($sp)");   // Save old FP on stack top
     generator.add_operation("addiu $sp, $sp, " + std::to_string(-frame_size)); // Push stack
     generator.add_operation("move $fp, $sp");   // Copy SP to FP
 }
@@ -269,16 +285,91 @@ void generate_loop(Node *node, ScopeStack *stack) {
     generator.add_operation(end_label + ":");
 }
 
+void add_params_to_stack(Node *node, Function &f) {
+    if(node == nullptr) return;
+
+    if(node->type == param) {
+        Variable var = Variable(node->lexeme, *node->var_type);
+        f.add_parameter(var);
+    }
+
+    add_params_to_stack(node->left, f);
+    add_params_to_stack(node->right, f);
+}
+
+void generate_block(Node *node, ScopeStack *stack, Function *f) {
+    stack->push();
+
+    if (f != nullptr) {
+        for (auto &param : *f) { // Add function parameter to the stack
+            stack->add_variable(param);
+        }
+    }
+
+    transverse_code(node->left, stack);
+    transverse_code(node->right, stack);
+    stack->pop();
+    return;
+}
+
+void generate_func(Node *node, ScopeStack *stack) {
+    auto f1 = node;
+    auto f2 = node->left;
+    auto list_params = f2->left;
+    auto f = Function(f1->lexeme, *f1->var_type);
+    add_params_to_stack(list_params, f);
+    
+    stack->add_function(f);
+    
+    generator.add_operation(f.get_name() + ":");
+    save_register("$fp");
+    save_register("$ra");
+    generator.add_operation("move $fp, $sp"); // Move sp to fp
+
+    CURRENT_FUNCTION = &f;
+    generate_block(f2->right, stack, &f);
+    CURRENT_FUNCTION = nullptr;
+
+    generator.add_operation("move $sp, $fp"); // Restore sp for caller
+    load_register("$ra");
+    load_register("$fp");
+    generator.add_operation("jr $ra"); // Jump to caller
+}
+
+void generate_func_call(Node *node, ScopeStack *stack) {
+    auto f = stack->get_function(node->lexeme);
+
+    Node *n = node->left;
+    auto params  = f->getParameters();
+
+    while (true) {
+        if (n->type == list_exp) {
+            generate_expr(n->right, stack);
+            save_register("$s0");
+        } else {
+            generate_expr(n, stack);
+            save_register("$s0");
+            break;
+        }
+
+        n = n->left;
+    }
+
+    generator.add_operation("jal " + node->lexeme);
+}
+
 void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
     if (node->type == prog) return generate_prog(node, stack);
+    if (node->type == func1) return generate_func(node, stack);
     if (node->type == list_decl_var) return generate_decl_var(node, stack);
     if (node->type == assign_op) return generate_assign_op(node, stack);
     if (node->type == write_cmd) return generate_write_cmd(node, stack);
     if (node->type == if_cond) return generate_conditions(node, stack);
     if (node->type == new_line) return generate_new_line(node, stack);
     if (node->type == loop) return generate_loop(node, stack);
+    if (node->type == func_call) return generate_func_call(node, stack);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);
