@@ -1,0 +1,19 @@
+programa {
+    int i, j;
+    i = 0;
+
+    enquanto (i < 10) execute {
+        escreva i;
+        escreva ": ";
+        j = 0;
+
+        enquanto (j < 10) execute {
+            escreva j;
+            escreva " ";
+            j = j + 1;
+        }
+
+        escreva "\n";
+        i = i + 1;
+    }
+}

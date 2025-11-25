@@ -18,6 +18,7 @@ auto def_code =
         "    syscall\n";
 
 unsigned long int COND_COUNT = 0;
+unsigned long int LOOP_COUNT = 0;
 
 void transverse_code(Node *node, ScopeStack *stack);
 std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack);
@@ -156,6 +157,14 @@ std::tuple<std::string, std::string, std::string> get_cond_labels() {
     return {then_label, else_label, end_label};
 }
 
+std::tuple<std::string, std::string, std::string> get_loop_labels() {
+    std::string run_label = "run" + std::to_string(LOOP_COUNT);
+    std::string while_label = "while" + std::to_string(LOOP_COUNT);
+    std::string end_label = "end_loop" + std::to_string(LOOP_COUNT);
+    LOOP_COUNT++;
+    return {run_label, while_label, end_label};
+}
+
 std::string get_branch_op(Node *node) {
     switch (node->type) {
         case eq_op:
@@ -176,25 +185,30 @@ std::string get_branch_op(Node *node) {
     }
 }
 
+std::string generate_cond_expr(Node *node, ScopeStack *stack) {
+    auto op = get_branch_op(node);
+
+    if(op == "") { // If there is no comparison in the condition if(x) 
+        op = "bne";
+        generate_expr(node, stack);
+        generator.add_operation("li $t1, 0");
+    } else { // If there is a comparison in the condition if (x == y)
+        generate_expr(node->left, stack);
+        save_register("$s0");
+        generate_expr(node->right, stack);
+        load_register("$t1");
+        // Right on s0 and left on t1
+    }
+
+    return op;
+}
+
 void generate_conditions(Node *node, ScopeStack *stack) {
     auto condition = node->left;
     auto blocks = node->right;
 
-    auto op = get_branch_op(condition);
-
-    if(op == "") { // If there is no comparison in the condition if(x) 
-        op = "bne";
-        generate_expr(condition, stack);
-        generator.add_operation("li $t1, 0");
-    } else { // If there is a comparison in the condition if (x ==y)
-        generate_expr(condition->left, stack);
-        save_register("$s0");
-        generate_expr(condition->right, stack);
-        load_register("$t1");
-        // Right on s0 and left on t1
-    }
-    
     auto [then_label, else_label, end_label] = get_cond_labels();
+    auto op = generate_cond_expr(condition, stack);
 
     generator.add_operation(op + " $t1, $s0, " + then_label);
 
@@ -221,6 +235,22 @@ void generate_new_line(Node *node, ScopeStack *stack) {
     transverse_code(node->right, stack);
 }
 
+void generate_loop(Node *node, ScopeStack *stack) {
+    auto condition = node->left;
+    auto block = node->right;
+
+    auto [run_label, while_label, end_label] = get_loop_labels();
+    
+    generator.add_operation(while_label + ":");
+    auto op = generate_cond_expr(condition, stack);
+    
+    generator.add_operation(op + " $t1, $s0, " + run_label);
+    generator.add_operation("b " + end_label);
+    generator.add_operation(run_label + ":");
+    transverse_code(block, stack);
+    generator.add_operation("b " + while_label);
+    generator.add_operation(end_label + ":");
+}
 
 void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
@@ -231,6 +261,7 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == write_cmd) return generate_write_cmd(node, stack);
     if (node->type == if_cond) return generate_conditions(node, stack);
     if (node->type == new_line) return generate_new_line(node, stack);
+    if (node->type == loop) return generate_loop(node, stack);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);
@@ -276,6 +307,7 @@ std::string generate_code(Node *node) {
 }
 
 void print_code(const std::string &code) {
+    int line_count = 1;
     std::string buffer;
     bool in_const_str = false;
 
@@ -284,10 +316,17 @@ void print_code(const std::string &code) {
             in_const_str = !in_const_str;
         }
 
-        if(code[i] == '\n' && in_const_str) {
-            buffer.push_back('\\');
-            buffer.push_back('n');
-            continue;
+        if(code[i] == '\n') {
+            if (in_const_str) {
+                buffer.push_back('\\');
+                buffer.push_back('n');
+                continue;
+            } else {
+                buffer.push_back('\n');
+                buffer.append(std::to_string(line_count) + ":\t");
+                line_count++;
+                continue;
+            }
         }
         
         buffer.push_back(code[i]);
