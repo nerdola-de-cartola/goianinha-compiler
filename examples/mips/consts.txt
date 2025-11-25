@@ -1,4 +1,9 @@
 programa {
+    escreva 'a';
+    novalinha;
+    escreva 99;
+    novalinha;
+    escreva "Ola mundo\n";
     escreva "asldhas";
     escreva "Ola \n Mundo \n\n";
 }

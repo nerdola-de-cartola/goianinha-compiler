@@ -1,6 +1,11 @@
 programa {
     int n, i, j ,k;
     int a, b, x;
+    
     j = 7;
+
     escreva j;
+    novalinha;
+    escreva j + j;
+    novalinha;
 }

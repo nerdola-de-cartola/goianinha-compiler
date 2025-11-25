@@ -69,6 +69,11 @@ int generate_expr(Node *node, ScopeStack *stack) {
         return 0;
     }
 
+    if(node->type == character) {
+        generator.add_operation("li $s0, \'" + node->lexeme + "\'");
+        return 0;
+    }
+
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
         std::string op = "lw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
@@ -116,19 +121,31 @@ void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes
     recursive_variable_declaration(node->right, stack, type);
 }
 
+std::string get_write_code(Node *node) {
+    switch (node->type) {
+        case const_string:
+            return "4";
+        case character:
+            return "11";
+        default:
+            return "1";
+    }
+}
+
 void generate_write_cmd(Node *node, ScopeStack *stack) {
+    auto wc = get_write_code(node->left);
+
     if(node->left->type == const_string) {
         generator.data_segments.push_back(node->left->lexeme);
         auto index = generator.data_segments.size() - 1;
         std::string op = "la $a0, msg" + std::to_string(index);
         generator.add_operation(op);
-        generator.add_operation("li $v0, 4");
     } else {
         generate_expr(node->left, stack);
         generator.add_operation("move $a0, $s0");
-        generator.add_operation("li $v0, 1");
     }
-
+    
+    generator.add_operation("li $v0, " + wc);
     generator.add_operation("syscall");
 }
 
@@ -243,7 +260,7 @@ void generate_loop(Node *node, ScopeStack *stack) {
     
     generator.add_operation(while_label + ":");
     auto op = generate_cond_expr(condition, stack);
-    
+
     generator.add_operation(op + " $t1, $s0, " + run_label);
     generator.add_operation("b " + end_label);
     generator.add_operation(run_label + ":");

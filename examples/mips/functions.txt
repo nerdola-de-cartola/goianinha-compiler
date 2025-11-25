@@ -3,5 +3,5 @@ car fib() {}
 int factorial() {}
 
 programa {
-    escreva "Ola \n Mundo \n\n";
+    escreva "Ola mundo\n";
 }
