@@ -5,20 +5,20 @@ programa {
     escreva i;
     novalinha;
 
-    se (i == 1) entao {
-        escreva "oi\n";
+    se (i-1) entao {
+        escreva "oi1\n";
     }
 
     se (i == 1) entao {
-        escreva "oi\n";
+        escreva "oi2\n";
         i = 0;
         se (i == 1) entao {
-            escreva "oi\n";
+            escreva "oi3\n";
         } senao {
-            escreva "ola\n";
+            escreva "ola1\n";
         }
     } senao {
-        escreva "ola\n";
+        escreva "ola2\n";
     }
 
     escreva "fim\n";

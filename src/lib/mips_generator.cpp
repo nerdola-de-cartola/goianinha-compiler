@@ -156,19 +156,47 @@ std::tuple<std::string, std::string, std::string> get_cond_labels() {
     return {then_label, else_label, end_label};
 }
 
+std::string get_branch_op(Node *node) {
+    switch (node->type) {
+        case eq_op:
+            return "beq";
+        case dif_op:
+            return "bne";
+        case less_op:
+            return "blt";
+        case greater_op:
+            return "bgt";
+        case le_op:
+            return "ble";
+        case ge_op:
+            return "bge";
+        
+        default:
+            return "";
+    }
+}
+
 void generate_conditions(Node *node, ScopeStack *stack) {
     auto condition = node->left;
     auto blocks = node->right;
 
-    generate_expr(condition->left, stack);
-    save_register("$s0");
-    generate_expr(condition->right, stack);
-    load_register("$t1");
-    // Right on s0 and left on t1
+    auto op = get_branch_op(condition);
+
+    if(op == "") { // If there is no comparison in the condition if(x) 
+        op = "bne";
+        generate_expr(condition, stack);
+        generator.add_operation("li $t1, 0");
+    } else { // If there is a comparison in the condition if (x ==y)
+        generate_expr(condition->left, stack);
+        save_register("$s0");
+        generate_expr(condition->right, stack);
+        load_register("$t1");
+        // Right on s0 and left on t1
+    }
     
     auto [then_label, else_label, end_label] = get_cond_labels();
 
-    generator.add_operation("beq $s0, $t1, " + then_label);
+    generator.add_operation(op + " $t1, $s0, " + then_label);
 
     if(blocks->type != block) { // If and else
         generator.add_operation(else_label + ":");
