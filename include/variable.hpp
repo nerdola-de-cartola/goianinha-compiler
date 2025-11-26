@@ -15,9 +15,12 @@ class Variable {
 private:
     std::string name;
     VariableTypes type;
-
+    
 public:
+    int pos;
+
     Variable(std::string name, VariableTypes type);
+    Variable(std::string name, VariableTypes type, int pos);
     ~Variable();
     std::string get_name();
     VariableTypes get_type();

@@ -1,7 +1,11 @@
 #include "variable.hpp"
 
 Variable::Variable(std::string name, VariableTypes type)
-    : name(name), type(type) {}
+    : name(name), type(type), pos(0) {}
+    
+Variable::Variable(std::string name, VariableTypes type, int pos)
+    : name(name), type(type), pos(pos) {}
+
 
 Variable::~Variable() {}
 

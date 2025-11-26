@@ -19,7 +19,9 @@ auto def_code =
 
 unsigned long int COND_COUNT = 0;
 unsigned long int LOOP_COUNT = 0;
-Function *CURRENT_FUNCTION = nullptr;
+long int CURRENT_VARIABLE_POSITION = 0;
+long int CURRENT_PARAMETER_POSITION = +12;
+Function *CURRENT_FUNC = nullptr;
 
 void transverse_code(Node *node, ScopeStack *stack);
 void generate_block(Node *node, ScopeStack *stack, Function *f);
@@ -78,19 +80,7 @@ int generate_expr(Node *node, ScopeStack *stack) {
 
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
-        bool isParam = false;
-        int offset;
-
-        if(CURRENT_FUNCTION != nullptr) {
-            isParam = CURRENT_FUNCTION->get_parameter(var->get_name()) != nullptr;
-        }
-
-        if (isParam) { // Function param
-            // TODO
-        } else { // Local variable
-            // TODO
-        }
-        
+        int offset = var->pos;        
         std::string op = "lw $s0, " + std::to_string(offset) + "($fp)";
         generator.add_operation(op); // Load var on s0
         return 0;
@@ -117,11 +107,11 @@ void generate_assign_op(Node *node, ScopeStack *stack) {
     auto [var, scope, pos] = get_var_on_stack(node, stack);
     //std::cout << pos << std::endl;
     generate_expr(node->left, stack);
-    std::string op = "sw $s0, " + std::to_string(4 + pos * 4) + "($fp)";
+    std::string op = "sw $s0, " + std::to_string(var->pos) + "($fp)";
     generator.add_operation(op);
 }
 
-void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes type) {
+void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes type, int *variables_count) {
     if(node == nullptr) return;
 
     if(node->type == list_decl_var) {
@@ -129,11 +119,13 @@ void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes
     }
 
     if(node->type == var) {
-        stack->add_variable(Variable(node->lexeme, type));
+        stack->add_variable(Variable(node->lexeme, type, CURRENT_VARIABLE_POSITION));
+        CURRENT_VARIABLE_POSITION += -4;
+        (*variables_count)++;
     }
 
-    recursive_variable_declaration(node->left, stack, type);
-    recursive_variable_declaration(node->right, stack, type);
+    recursive_variable_declaration(node->left, stack, type, variables_count);
+    recursive_variable_declaration(node->right, stack, type, variables_count);
 }
 
 std::string get_write_code(Node *node) {
@@ -168,18 +160,16 @@ void generate_prog(Node *node, ScopeStack *stack) {
     transverse_code(node->left, stack);
 
     generator.add_operation("main:");
+    generator.add_operation("move $fp, $sp");
     generate_block(node->right, stack, nullptr);
     generator.add_operation("li $v0, 10");
     generator.add_operation("syscall");
 }
 
 void generate_decl_var(Node *node, ScopeStack *stack) {
-    recursive_variable_declaration(node, stack, *node->var_type);
-    int count = stack->get_variable_count();
-    int frame_size = 4 + count*4;
-    generator.add_operation("sw $fp, 0($sp)");   // Save old FP on stack top
-    generator.add_operation("addiu $sp, $sp, " + std::to_string(-frame_size)); // Push stack
-    generator.add_operation("move $fp, $sp");   // Copy SP to FP
+    int variables_count = 0;
+    recursive_variable_declaration(node, stack, *node->var_type, &variables_count);
+    generator.add_operation("addiu $sp, $sp, " + std::to_string(-(variables_count*4))); // Push stack
 }
 
 std::tuple<std::string, std::string, std::string> get_cond_labels() {
@@ -289,7 +279,8 @@ void add_params_to_stack(Node *node, Function &f) {
     if(node == nullptr) return;
 
     if(node->type == param) {
-        Variable var = Variable(node->lexeme, *node->var_type);
+        Variable var = Variable(node->lexeme, *node->var_type, CURRENT_PARAMETER_POSITION);
+        CURRENT_PARAMETER_POSITION += 4;
         f.add_parameter(var);
     }
 
@@ -299,6 +290,8 @@ void add_params_to_stack(Node *node, Function &f) {
 
 void generate_block(Node *node, ScopeStack *stack, Function *f) {
     stack->push();
+    int previous_variable_start = CURRENT_VARIABLE_POSITION;
+
 
     if (f != nullptr) {
         for (auto &param : *f) { // Add function parameter to the stack
@@ -308,6 +301,9 @@ void generate_block(Node *node, ScopeStack *stack, Function *f) {
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);
+    
+    // Reset stack position for local variables
+    CURRENT_VARIABLE_POSITION = previous_variable_start; 
     stack->pop();
     return;
 }
@@ -326,9 +322,12 @@ void generate_func(Node *node, ScopeStack *stack) {
     save_register("$ra");
     generator.add_operation("move $fp, $sp"); // Move sp to fp
 
-    CURRENT_FUNCTION = &f;
+    CURRENT_FUNC = &f;
+    CURRENT_PARAMETER_POSITION = +12;
     generate_block(f2->right, stack, &f);
-    CURRENT_FUNCTION = nullptr;
+    CURRENT_FUNC = nullptr;
+    CURRENT_PARAMETER_POSITION = +12;
+
 
     generator.add_operation("move $sp, $fp"); // Restore sp for caller
     load_register("$ra");

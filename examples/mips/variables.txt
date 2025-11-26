@@ -1,11 +1,18 @@
 programa {
-    int n, i, j ,k;
-    int a, b, x;
-    
-    j = 7;
+    int a, b;
+    a = 1;
+    b = 1;
 
-    escreva j;
-    novalinha;
-    escreva j + j;
-    novalinha;
+
+    {
+        int a;
+        a = 2;
+        {
+            int b;
+            b = 9;
+            escreva a; escreva b; novalinha; /*29*/
+        }
+        escreva a; escreva b; novalinha; /*21*/
+    }
+    escreva a; escreva b; novalinha; /*11*/
 }

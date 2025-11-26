@@ -3,11 +3,7 @@ int f(int n, int j, int k, int l) {
     escreva j; novalinha;
     escreva k; novalinha;
     escreva l; novalinha;
-    escreva "f\n";
 }
-
-car fib() {}
-int factorial() {}
 
 programa {
     int i;
