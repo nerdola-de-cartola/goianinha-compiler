@@ -1,3 +1,22 @@
+int f(int i) {
+    int a, b;
+    a = 10;
+    b = 10;
+
+
+    {
+        int a;
+        a = 20;
+        {
+            int b;
+            b = 90;
+            escreva a; escreva b; novalinha; /*2090*/
+        }
+        escreva a; escreva b; novalinha; /*2010*/
+    }
+    escreva a; escreva b; novalinha; /*1010*/
+}
+
 programa {
     int a, b;
     a = 1;
@@ -11,6 +30,7 @@ programa {
             int b;
             b = 9;
             escreva a; escreva b; novalinha; /*29*/
+            f(0);
         }
         escreva a; escreva b; novalinha; /*21*/
     }

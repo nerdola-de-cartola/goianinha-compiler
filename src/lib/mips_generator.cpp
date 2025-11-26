@@ -80,7 +80,7 @@ int generate_expr(Node *node, ScopeStack *stack) {
 
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
-        int offset = var->pos;        
+        int offset = var->pos;
         std::string op = "lw $s0, " + std::to_string(offset) + "($fp)";
         generator.add_operation(op); // Load var on s0
         return 0;
@@ -369,6 +369,7 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == new_line) return generate_new_line(node, stack);
     if (node->type == loop) return generate_loop(node, stack);
     if (node->type == func_call) return generate_func_call(node, stack);
+    if (node->type == block) return generate_block(node, stack, nullptr);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);
