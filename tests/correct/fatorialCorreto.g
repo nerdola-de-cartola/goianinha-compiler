@@ -22,4 +22,6 @@ programa {
 	escreva " e: ";
 	escreva fatorial(n);
 	novalinha;
+	escreva n;
+	novalinha;
 }

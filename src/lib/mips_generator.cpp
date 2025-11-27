@@ -19,9 +19,13 @@ auto def_code =
 
 unsigned long int COND_COUNT = 0;
 unsigned long int LOOP_COUNT = 0;
+const long int POS_FOR_GLOBALS = 687;
 long int CURRENT_VARIABLE_POSITION = 0;
 long int CURRENT_PARAMETER_POSITION = +12;
+Function MAIN = Function("main", INT);
 Function *CURRENT_FUNC = nullptr;
+
+std::vector<std::string> globals;
 
 void transverse_code(Node *node, ScopeStack *stack);
 void generate_block(Node *node, ScopeStack *stack, Function *f);
@@ -38,6 +42,13 @@ int MipsGenerator::add_operation(std::string op) {
 }
 
 auto generator = MipsGenerator();
+
+bool isGlobal(Variable &var) {
+    if (var.pos == POS_FOR_GLOBALS) 
+        return true;
+
+    return false;
+}
 
 std::string get_op_from_node(Node *node) {
     switch (node->type) {
@@ -88,8 +99,16 @@ void generate_expr(Node *node, ScopeStack *stack) {
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
         int offset = var->pos;
-        std::string op = "lw $s0, " + std::to_string(offset) + "($fp)";
-        generator.add_operation(op); // Load var on s0
+        std::cout << var->toString() << " na posição " << var->pos << std::endl;
+
+        if(isGlobal(*var)) { // Global variables
+            std::cout << "Acessando global" << std::endl;
+            generator.add_operation("la $t0, " + var->get_name()); // Load global addrs on t0
+            generator.add_operation("lw $s0, 0($t0)"); // Load global value on s0
+        } else { // Local variables
+            generator.add_operation("lw $s0, " + std::to_string(offset) + "($fp)"); // Load var on s0
+        }
+
         return;
     }
 
@@ -116,12 +135,17 @@ void generate_assign_op(Node *node, ScopeStack *stack) {
     if (node == nullptr) return;
 
     auto [var, scope, pos] = get_var_on_stack(node, stack);
+    //std::cout << var->toString() << " no escopo " << scope << std::endl;
 
     if (node->left->type == assign_op) generate_assign_op(node->left, stack);
     else generate_expr(node->left, stack);
 
-    std::string op = "sw $s0, " + std::to_string(var->pos) + "($fp)";
-    generator.add_operation(op);
+    if (isGlobal(*var)) { // Global variables
+        generator.add_operation("la $t0, " + var->get_name());        
+        generator.add_operation("sw $s0, 0($t0)");        
+    } else { // Local variable
+        generator.add_operation("sw $s0, " + std::to_string(var->pos) + "($fp)");
+    }
 }
 
 void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes type, int *variables_count) {
@@ -132,9 +156,14 @@ void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes
     }
 
     if(node->type == var) {
-        stack->add_variable(Variable(node->lexeme, type, CURRENT_VARIABLE_POSITION));
-        CURRENT_VARIABLE_POSITION += -4;
-        (*variables_count)++;
+        if (CURRENT_FUNC == nullptr) { // Global variables
+            stack->add_variable(Variable(node->lexeme, type, POS_FOR_GLOBALS));
+            globals.push_back(node->lexeme);
+        } else { // Local variables
+            stack->add_variable(Variable(node->lexeme, type, CURRENT_VARIABLE_POSITION));
+            CURRENT_VARIABLE_POSITION += -4;
+            (*variables_count)++;
+        }
     }
 
     recursive_variable_declaration(node->left, stack, type, variables_count);
@@ -203,11 +232,14 @@ void generate_write_cmd(Node *node, ScopeStack *stack) {
 void generate_prog(Node *node, ScopeStack *stack) {
     transverse_code(node->left, stack);
 
+    CURRENT_FUNC = &MAIN;
     generator.add_operation("main:");
-    generator.add_operation("move $fp, $sp");
+    generator.add_operation("move $s1, $sp"); // Copy sp to s1
+    generator.add_operation("move $fp, $sp"); // Copy sp to fp
     generate_block(node->right, stack, nullptr);
-    generator.add_operation("li $v0, 10");
+    generator.add_operation("li $v0, 10"); // Call exit(0)
     generator.add_operation("syscall");
+    CURRENT_FUNC = nullptr;
 }
 
 void generate_decl_var(Node *node, ScopeStack *stack) {
@@ -357,6 +389,7 @@ void generate_func(Node *node, ScopeStack *stack) {
     auto f2 = node->left;
     auto list_params = f2->left;
     auto f = Function(f1->lexeme, *f1->var_type);
+    CURRENT_FUNC = &f;
     add_params_to_stack(list_params, f);
     
     stack->add_function(f);
@@ -366,18 +399,17 @@ void generate_func(Node *node, ScopeStack *stack) {
     save_register("$ra");
     generator.add_operation("move $fp, $sp"); // Move sp to fp
 
-    CURRENT_FUNC = &f;
     CURRENT_PARAMETER_POSITION = +12;
     generate_block(f2->right, stack, &f);
-    CURRENT_FUNC = nullptr;
     CURRENT_PARAMETER_POSITION = +12;
-
+    
     generator.add_operation("move $sp, $fp"); // Restore sp for caller, this also mean popping local variables
     load_register("$ra");
     load_register("$fp");
     int offset = f.getParameters().size() * 4;
     generator.add_operation("addiu $sp, $sp, " + std::to_string(offset)); // Pop parameters
     generator.add_operation("jr $ra"); // Jump to caller
+    CURRENT_FUNC = nullptr;
 }
 
 void generate_func_call(Node *node, ScopeStack *stack) {
@@ -437,6 +469,10 @@ std::string data_section() {
         i++;
     }
 
+    for (auto global : globals) {
+        buffer += global + ": .word 0\n";
+    }
+
     return buffer;
 }
 
@@ -471,6 +507,9 @@ void print_code(const std::string &code) {
     std::string buffer;
     bool in_const_str = false;
 
+    buffer.append(std::to_string(line_count) + ":\t");
+    line_count++;
+
     for (long unsigned int i = 0; i < code.size(); i++) {
         if(code[i] == '\"') {
             in_const_str = !in_const_str;
@@ -483,8 +522,11 @@ void print_code(const std::string &code) {
                 continue;
             } else {
                 buffer.push_back('\n');
-                buffer.append(std::to_string(line_count) + ":\t");
-                line_count++;
+
+                if (i != code.size()-1) {
+                    buffer.append(std::to_string(line_count) + ":\t");
+                    line_count++;
+                }
                 continue;
             }
         }

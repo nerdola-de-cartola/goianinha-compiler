@@ -23,7 +23,7 @@ int  fat, fib;
 
 programa {
 	int n;
-	n = 1-0;
+	n = 0-1;
 
 	enquanto (n<0) execute {
 		escreva "digite um numero";
@@ -35,13 +35,13 @@ programa {
 	escreva "O fatorial de ";
 	escreva n;
 	escreva " e: ";
-	escreva fat;
+	escreva fatorial(n);
 	novalinha;
 
 	fib=fibonacci(n);
 	escreva "Fibonacci de ";
 	escreva n;
-	escreva "e: ";
+	escreva " e: ";
 	escreva fib;
 	novalinha;
 

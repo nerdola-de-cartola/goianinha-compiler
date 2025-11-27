@@ -1,0 +1,13 @@
+int G1;
+
+int f(int n) {
+    G1 = n;
+}
+
+programa {
+    int x1;
+    x1 = 0;
+    f(99);
+    escreva x1; novalinha; /*0*/
+    escreva G1; novalinha; /*99*/
+}
