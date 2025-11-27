@@ -9,9 +9,9 @@ int fatorial(int n) {
 
 programa {
 	int n;
-	n =1;
+	n = 0-1;
 
-	enquanto (n>0) execute {
+	enquanto (n<0) execute {
 		escreva "digite um numero";
 		novalinha;
 		leia n;    

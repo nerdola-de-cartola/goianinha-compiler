@@ -1,0 +1,11 @@
+programa {
+    int x;
+    car c;
+
+    leia x;
+    leia c;
+
+    escreva x; novalinha;
+    escreva c; novalinha;
+    escreva "FIM\n";
+}

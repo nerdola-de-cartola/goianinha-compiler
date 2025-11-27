@@ -237,6 +237,10 @@ void transverse_return(Node *node, ScopeStack *stack) {
     return transverse_expr(node->left, stack, type);
 }
 
+void transverse_read_write_cmd(Node *node, ScopeStack *stack) {
+    get_recursive_node_type(node->left, stack);
+}
+
 void transverse(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -248,6 +252,8 @@ void transverse(Node *node, ScopeStack *stack) {
     if (node->type == loop) return transverse_loop(node, stack);
     if (node->type == if_cond) return transverse_condition(node, stack);
     if (node->type == return_cmd) transverse_return(node, stack);
+    if (node->type == read_cmd) transverse_read_write_cmd(node, stack);
+    if (node->type == write_cmd) transverse_read_write_cmd(node, stack);
 
 
     if (isOperation(node)) {

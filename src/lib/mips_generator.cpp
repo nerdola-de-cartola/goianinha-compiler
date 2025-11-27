@@ -141,19 +141,50 @@ void recursive_variable_declaration(Node *node, ScopeStack *stack, VariableTypes
     recursive_variable_declaration(node->right, stack, type, variables_count);
 }
 
-std::string get_write_code(Node *node) {
-    switch (node->type) {
-        case const_string:
+VariableTypes get_type_from_node(Node *node, ScopeStack *stack) {
+    if(node->var_type != nullptr) return *node->var_type;
+
+    if(node->type == var) {
+        return stack->get_variable(node->lexeme)->get_type();
+    }
+
+    return INT;
+}
+
+std::string get_write_code(VariableTypes type) {
+    switch (type) {
+        case STR:
             return "4";
-        case character:
+        case CAR:
             return "11";
-        default:
+        case INT:
             return "1";
+        default:
+            return "NO_CODE_FOR_WRITE";
     }
 }
 
+std::string get_read_code(VariableTypes type) {
+    switch (type) {
+        case CAR:
+            return "12";
+        case INT:
+            return "5";
+        default:
+            return "NO_CODE_FOR_READ";
+    }
+}
+
+void generate_read_cmd(Node *node, ScopeStack *stack) {
+    auto var = stack->get_variable(node->lexeme);
+    auto wc = get_read_code(var->get_type());
+    generator.add_operation("li $v0, " + wc);
+    generator.add_operation("syscall");
+    generator.add_operation("sw $v0, " + std::to_string(var->pos) + "($fp)"); // Save the read value into stack
+}
+
 void generate_write_cmd(Node *node, ScopeStack *stack) {
-    auto wc = get_write_code(node->left);
+    auto wc = get_write_code(get_type_from_node(node->left, stack));
 
     if(node->left->type == const_string) {
         generator.data_segments.push_back(node->left->lexeme);
@@ -341,10 +372,11 @@ void generate_func(Node *node, ScopeStack *stack) {
     CURRENT_FUNC = nullptr;
     CURRENT_PARAMETER_POSITION = +12;
 
-
-    generator.add_operation("move $sp, $fp"); // Restore sp for caller
+    generator.add_operation("move $sp, $fp"); // Restore sp for caller, this also mean popping local variables
     load_register("$ra");
     load_register("$fp");
+    int offset = f.getParameters().size() * 4;
+    generator.add_operation("addiu $sp, $sp, " + std::to_string(offset)); // Pop parameters
     generator.add_operation("jr $ra"); // Jump to caller
 }
 
@@ -382,6 +414,7 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == func1) return generate_func(node, stack);
     if (node->type == list_decl_var) return generate_decl_var(node, stack);
     if (node->type == assign_op) return generate_assign_op(node, stack);
+    if (node->type == read_cmd) return generate_read_cmd(node, stack);
     if (node->type == write_cmd) return generate_write_cmd(node, stack);
     if (node->type == if_cond) return generate_conditions(node, stack);
     if (node->type == new_line) return generate_new_line(node, stack);
