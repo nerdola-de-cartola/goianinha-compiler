@@ -4,9 +4,9 @@ int f(int _a, int b, int c, int d, int ve) {
 
 programa {
     int i;
-    i = +10;
+    i = 10;
     i = 0;
-    i = -99;
-    escreva i; novalinha;
+    i = 99;
+    escreva -i; novalinha; /*-99*/
     escreva f(49, 3, 4, 5, 2); novalinha; /*42*/
 }

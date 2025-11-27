@@ -10,7 +10,7 @@ std::string yylval; // To store the semantic value
 %}
 
 DIGIT           [0-9]
-NUMBER          ("+"|"-"|""){DIGIT}+
+NUMBER          {DIGIT}+
 LETTER          [a-zA-Z]
 ID              ({LETTER}|"_"{LETTER})({LETTER}|"_"|{DIGIT})*
 WHITESPACE      [\t\r" "]

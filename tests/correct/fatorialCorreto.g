@@ -1,6 +1,6 @@
 /* Este e um programa CORRETO em Cafezinho que calcula o fatorial de um nmero*/
 
-int fatorial(int n){
+int fatorial(int n) {
 	se (n==0) entao
 		retorne 1;
 	senao

@@ -49,6 +49,8 @@ std::string get_op_from_node(Node *node) {
             return "mul";
         case div_op:
             return "div";
+        case negative_op:
+            return "neg";
         default:
             return "NOOP";
     }
@@ -68,12 +70,7 @@ void generate_expr(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
     if(node->type == number) {
-        std::string value;
-        if(node->lexeme[0] == '+') {
-            value = node->lexeme.substr(1);
-        } else {
-            value = node->lexeme;
-        }
+        std::string value = node->lexeme;
         generator.add_operation("li $s0, " + value);
         return;
     }
@@ -101,7 +98,9 @@ void generate_expr(Node *node, ScopeStack *stack) {
     generate_expr(node->right, stack);
     load_register("$t1");
     std::string op = get_op_from_node(node);
-    generator.add_operation(op + " $s0, $t1, $s0"); // left op right
+
+    if(node->type == negative_op) generator.add_operation(op + " $s0, $t1"); // s0 = -left
+    else generator.add_operation(op + " $s0, $t1, $s0"); // s0 = left op right
     
     return;
 }
@@ -120,7 +119,7 @@ void generate_assign_op(Node *node, ScopeStack *stack) {
 
     if (node->left->type == assign_op) generate_assign_op(node->left, stack);
     else generate_expr(node->left, stack);
-    
+
     std::string op = "sw $s0, " + std::to_string(var->pos) + "($fp)";
     generator.add_operation(op);
 }
