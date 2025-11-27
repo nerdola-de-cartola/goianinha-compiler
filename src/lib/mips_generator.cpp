@@ -114,9 +114,13 @@ std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack)
 }
 
 void generate_assign_op(Node *node, ScopeStack *stack) {
+    if (node == nullptr) return;
+
     auto [var, scope, pos] = get_var_on_stack(node, stack);
-    //std::cout << pos << std::endl;
-    generate_expr(node->left, stack);
+
+    if (node->left->type == assign_op) generate_assign_op(node->left, stack);
+    else generate_expr(node->left, stack);
+    
     std::string op = "sw $s0, " + std::to_string(var->pos) + "($fp)";
     generator.add_operation(op);
 }
