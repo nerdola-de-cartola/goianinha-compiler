@@ -25,6 +25,7 @@ Function *CURRENT_FUNC = nullptr;
 
 void transverse_code(Node *node, ScopeStack *stack);
 void generate_block(Node *node, ScopeStack *stack, Function *f);
+void generate_func_call(Node *node, ScopeStack *stack);
 std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack);
 
 MipsGenerator::MipsGenerator() {}
@@ -49,10 +50,8 @@ std::string get_op_from_node(Node *node) {
         case div_op:
             return "div";
         default:
-            return "";
+            return "NOOP";
     }
-
-    return "";
 }
 
 void save_register(std::string reg) {
@@ -65,17 +64,22 @@ void load_register(std::string reg) {
     generator.add_operation("addiu $sp, $sp, 4"); // Pop stack
 }
 
-int generate_expr(Node *node, ScopeStack *stack) {
-    if(node == nullptr) return 1;
+void generate_expr(Node *node, ScopeStack *stack) {
+    if(node == nullptr) return;
 
     if(node->type == number) {
         generator.add_operation("li $s0, " + node->lexeme);
-        return 0;
+        return;
+    }
+
+    if(node->type == func_call) {
+        generate_func_call(node, stack);
+        return;
     }
 
     if(node->type == character) {
         generator.add_operation("li $s0, \'" + node->lexeme + "\'");
-        return 0;
+        return;
     }
 
     if(node->type == var) {
@@ -83,7 +87,7 @@ int generate_expr(Node *node, ScopeStack *stack) {
         int offset = var->pos;
         std::string op = "lw $s0, " + std::to_string(offset) + "($fp)";
         generator.add_operation(op); // Load var on s0
-        return 0;
+        return;
     }
 
     generate_expr(node->left, stack);
@@ -91,9 +95,9 @@ int generate_expr(Node *node, ScopeStack *stack) {
     generate_expr(node->right, stack);
     load_register("$t1");
     std::string op = get_op_from_node(node);
-    generator.add_operation(op + " $s0, $t1, $s0"); // left + right
+    generator.add_operation(op + " $s0, $t1, $s0"); // left op right
     
-    return 0;
+    return;
 }
 
 std::tuple<Variable *, int, int> get_var_on_stack(Node *node, ScopeStack *stack) {
@@ -336,6 +340,7 @@ void generate_func(Node *node, ScopeStack *stack) {
 }
 
 void generate_func_call(Node *node, ScopeStack *stack) {
+    //std::cout << "oiiiiiiiila" << std::endl;
     auto f = stack->get_function(node->lexeme);
 
     Node *n = node->left;
@@ -357,6 +362,10 @@ void generate_func_call(Node *node, ScopeStack *stack) {
     generator.add_operation("jal " + node->lexeme);
 }
 
+void generate_return(Node *node, ScopeStack *stack) {
+    generate_expr(node->left, stack);
+}
+
 void transverse_code(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
@@ -370,6 +379,7 @@ void transverse_code(Node *node, ScopeStack *stack) {
     if (node->type == loop) return generate_loop(node, stack);
     if (node->type == func_call) return generate_func_call(node, stack);
     if (node->type == block) return generate_block(node, stack, nullptr);
+    if (node->type == return_cmd) return generate_return(node, stack);
 
     transverse_code(node->left, stack);
     transverse_code(node->right, stack);

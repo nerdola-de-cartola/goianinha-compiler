@@ -1,0 +1,7 @@
+int f(int a, int b, int c, int d, int ve) {
+    retorne a + b - c * d / ve; 
+}
+
+programa {
+    escreva f(49, 3, 4, 5, 2); novalinha; /*42*/
+}
