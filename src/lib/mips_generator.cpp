@@ -68,7 +68,13 @@ void generate_expr(Node *node, ScopeStack *stack) {
     if(node == nullptr) return;
 
     if(node->type == number) {
-        generator.add_operation("li $s0, " + node->lexeme);
+        std::string value;
+        if(node->lexeme[0] == '+') {
+            value = node->lexeme.substr(1);
+        } else {
+            value = node->lexeme;
+        }
+        generator.add_operation("li $s0, " + value);
         return;
     }
 

@@ -6,12 +6,11 @@
 #include <string>
 #include "token_type.hpp"
 
-// To store the semantic value
-std::string yylval;
-//int yylineno = -10;
+std::string yylval; // To store the semantic value
 %}
 
 DIGIT           [0-9]
+NUMBER          ("+"|"-"|""){DIGIT}+
 LETTER          [a-zA-Z]
 ID              ({LETTER}|"_"{LETTER})({LETTER}|"_"|{DIGIT})*
 WHITESPACE      [\t\r" "]
@@ -77,7 +76,7 @@ WHITESPACE      [\t\r" "]
 
 {ID}                                { yylval = YYText(); return ID; }
 
-{DIGIT}+                            { yylval = YYText(); return CONST_INT; }
+{NUMBER}                            { yylval = YYText(); return CONST_INT; }
 {WHITESPACE}                        { yylval = YYText(); return WHITES; }
 "\n"                                { }   // conta linhas
 <<EOF>>                             { yylval = YYText(); return TOK_EOF; }
