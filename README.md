@@ -1,6 +1,6 @@
 # Projeto Compilador
 
-Um framework de compilador C++ para fins educacionais e de desenvolvimento.
+Um compilador para a linguagem Goianinha, escrito em C++ para fins educacionais.
 
 ## Estrutura do Projeto
 
@@ -9,21 +9,26 @@ compiler/
 ├── CMakeLists.txt                             # Configuração de build
 ├── README.md                                  # Este arquivo
 ├── .gitignore                                 # Padrões de ignore do Git
-├── src/                                       # Arquivos fonte
-|   └──lib/                                    # Código de biblioteca
-│   └── main.cpp                               # Ponto de entrada para teste do analizador sintático
-│   └── test_lexical_analyzer.cpp              # Ponto de entrada para teste do analizador lexico
-│   └── test_scope_stack.cpp                   # Ponto de entrada para teste da pilha de escopos
 ├── include/                                   # Arquivos de cabeçalho
 ├── examples/                                  # Arquivos de exemplo para entrada
-└── build/                                     # Diretório de build (gerado, arquivos do bison e do flex)
+├── tests/                                     # Arquivos de exemplo para entrada
+├── build/                                     # Diretório de build (gerado, arquivos do bison e do flex)
+└── src/                                       # Arquivos fonte
+    └──lib/                                    # Código de biblioteca
+    └── main.cpp                               # Ponto de entrada para o compilador e simulador de mips.
+    └── test_ast.cpp                           # Ponto de entrada para teste da árvore abstrata de sintax 
+    └── test_lexical_analyzer.cpp              # Ponto de entrada para teste do analizador lexico
+    └── test_scope_stack.cpp                   # Ponto de entrada para teste da pilha de escopos
+    └── test_script.py                         # Ponto de entrada para testar o compilador com todos os arquivos da pasta tests/
+    └── test_semantic_analyzer.cpp             # Ponto de entrada para teste do analizador semântico
+    └── test_syntactic_analyzer.cpp            # Ponto de entrada para teste do analizador syntatico
 ```
 
 ## Pré-requisitos
 
 - Compilador compatível com C++17 (GCC 7+, Clang 5+, MSVC 2017+)
 - CMake 3.10 ou superior
-- Make (ou sistema de build Ninja)
+- Make
 - Flex
 - Bison
 
@@ -32,9 +37,8 @@ compiler/
 1. Crie um diretório de build e navegue até ele:
    ```bash
    cd compiler
-   mkdir build
+   mkdir -p build/bison
    cd build
-   mkdir bison
    ```
 
 2. Gere os arquivos de build:
@@ -56,11 +60,9 @@ cmake --build build
 
 ## Executando
 
-Após a compilação, execute os programas de teste:
+Após a compilação, execute o compilador/simulador:
 ```bash
-./build/compiler examples/1.txt
-./build/test_lexical_analyzer examples/1.txt
-./build/test_scope_stack
+./build/compiler ./examples/mips/consts.txt
 ```
 
 ## Desenvolvimento
@@ -71,13 +73,7 @@ O framework do compilador inclui os seguintes componentes principais (a serem im
 - **Análise Sintática**: Análise da sintaxe e geração de AST  
 - **Análise Semântica**: Verificação de tipos e gerenciamento de tabela de símbolos
 - **Geração de Código**: Geração de código alvo
-
-## Contribuindo
-
-1. Adicione arquivos fonte ao diretório `src/`
-2. Adicione arquivos de cabeçalho ao diretório `include/`
-3. Adicione testes ao diretório `tests/`
-4. Atualize este README conforme necessário
+- **Simulação**: Execução do código MIPS
 
 ## Licença
 
