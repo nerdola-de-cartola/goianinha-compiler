@@ -26,7 +26,7 @@ int  fat, fib;
 
 programa {
 	int n;
-	n = 1-0;
+	n = 0-1;
 
 	enquanto (n<0) execute {
 		escreva "digite um numero";

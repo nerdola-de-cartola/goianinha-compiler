@@ -1,5 +1,6 @@
-int duplicado(int x) {
-    car x;
+car x;
+
+int duplicado(int y) {
     x = 'z';
     escreva x;
     retorne 0;
