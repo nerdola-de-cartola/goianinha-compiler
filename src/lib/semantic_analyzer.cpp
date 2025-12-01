@@ -48,7 +48,7 @@ void transverse_decl_var(Node *node, ScopeStack *stack, VariableTypes type) {
     if(node->type == var) {
         Result r = stack->add_variable(Variable(node->lexeme, type));
         if(r == ERROR) {
-            std::cout << node->toString() << std::endl;
+            //std::cout << node->toString() << std::endl;
             show_error(semantic, node->loc, "repeated variable name " + node->lexeme + " in block", stack);
         }
     }

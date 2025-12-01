@@ -28,7 +28,7 @@ int main() {
         default_loc
     );
 
-    root->traverse_prev();
+    root->printTree();
 
     delete root;
     

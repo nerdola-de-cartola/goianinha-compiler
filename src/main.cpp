@@ -32,11 +32,11 @@ int main(int argc, char* argv[]) {
     SemanticAnalyzer sem = SemanticAnalyzer(*lexer, syn);
     sem.analyze();
     auto ast = lexer->get_ast();
-    ast->printTree();
+    //ast->printTree();
 
     auto code = generate_code(ast);
 
-    print_code(code);
+    //print_code(code);
     run_code(code);
 
     // Cleanup

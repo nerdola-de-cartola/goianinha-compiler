@@ -99,7 +99,7 @@ void generate_expr(Node *node, ScopeStack *stack) {
     if(node->type == var) {
         auto [var, scope, pos] = get_var_on_stack(node, stack);
         int offset = var->pos;
-        std::cout << var->toString() << " na posição " << var->pos << std::endl;
+        //std::cout << var->toString() << " na posição " << var->pos << std::endl;
 
         if(isGlobal(*var)) { // Global variables
             std::cout << "Acessando global" << std::endl;

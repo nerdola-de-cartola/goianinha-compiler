@@ -26,8 +26,7 @@ int main(int argc, char* argv[]) {
     SyntacticAnalyzer syn = SyntacticAnalyzer(lexer);
     SemanticAnalyzer sem = SemanticAnalyzer(*lexer, syn);
     syn.parse();
-    auto root = lexer->get_ast();
-    root->printTree();
+    //lexer->get_ast()->printTree();
     sem.analyze();
 
     // Cleanup

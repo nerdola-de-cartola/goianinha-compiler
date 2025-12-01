@@ -48,8 +48,13 @@ void show_error(ErrorType type, const yy::location &loc, const std::string &msg,
             << default
             << std::endl;
 
-    if (stack != nullptr)
-        std::cout << std::endl << stack->toString() << std::endl;
+    if (stack != nullptr) {
+        std::cerr 
+            << "Pilha de escopos no momento do erro."
+            << std::endl
+            << stack->toString()
+            << std::endl;
+    }
 
     return exit(1);
 }
