@@ -2,7 +2,7 @@ car x;
 
 int duplicado(int y) {
     x = 'z';
-    escreva x;
+    escreva x; novalinha;
     retorne 0;
 }
 

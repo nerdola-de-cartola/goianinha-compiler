@@ -102,7 +102,7 @@ void generate_expr(Node *node, ScopeStack *stack) {
         //std::cout << var->toString() << " na posição " << var->pos << std::endl;
 
         if(isGlobal(*var)) { // Global variables
-            std::cout << "Acessando global" << std::endl;
+            //std::cout << "Acessando global" << std::endl;
             generator.add_operation("la $t0, " + var->get_name()); // Load global addrs on t0
             generator.add_operation("lw $s0, 0($t0)"); // Load global value on s0
         } else { // Local variables
