@@ -245,7 +245,10 @@ void generate_prog(Node *node, ScopeStack *stack) {
 void generate_decl_var(Node *node, ScopeStack *stack) {
     int variables_count = 0;
     recursive_variable_declaration(node, stack, *node->var_type, &variables_count);
-    generator.add_operation("addiu $sp, $sp, " + std::to_string(-(variables_count*4))); // Push stack
+
+    if (variables_count != 0) {
+        generator.add_operation("addiu $sp, $sp, " + std::to_string(-(variables_count*4))); // Push stack
+    }
 }
 
 std::tuple<std::string, std::string, std::string> get_cond_labels() {

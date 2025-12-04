@@ -96,7 +96,7 @@ VariableTypes get_recursive_node_type(Node *node, ScopeStack *stack) {
         VariableTypes rt = get_recursive_node_type(node->right, stack);
 
         if (lt != rt) {
-            std::cout << node->toString() << std::endl;
+            //std::cout << node->toString() << std::endl;
             std::string msg = "different types " + Variable::typeToString(lt) + " and " + Variable::typeToString(rt) + " in operation";
             show_error(semantic, node->loc, msg, stack);
         }
@@ -115,7 +115,7 @@ void transverse_expr(Node *node, ScopeStack *stack, VariableTypes expected_type)
     auto current_type = get_recursive_node_type(node, stack);
 
     if(current_type != expected_type) {
-        std::cout << node->toString() << std::endl;
+        //std::cout << node->toString() << std::endl;
         std::string msg = "wrong type " + Variable::typeToString(current_type) + " where was expected " + Variable::typeToString(expected_type); 
         return show_error(semantic, node->loc, msg, stack);
     }
@@ -128,7 +128,7 @@ void add_all_parameters(Node *node, Function &f) {
         Variable var = Variable(node->lexeme, *node->var_type);
         Result r = f.add_parameter(var);
         if (r == ERROR) {
-            std::cout << node->toString() << std::endl;
+            //std::cout << node->toString() << std::endl;
             std::string msg = "repeated parameter name " + var.get_name() + " in function " + f.get_name(); 
             show_error(semantic, node->loc, msg);
         }
@@ -147,7 +147,7 @@ void transverse_function_declaration(Node *node, ScopeStack *stack) {
     
     Result r = stack->add_function(f);
     if(r == ERROR) {
-        std::cout << node->toString() << std::endl;
+        //std::cout << node->toString() << std::endl;
         show_error(semantic, node->loc, "repeated function name " + f.get_name(), stack);
     }
     
@@ -201,13 +201,13 @@ void transverse_func_call(Node *node, ScopeStack *stack) {
     }
 
     if (i != -1) {
-        std::cout << node->toString() << std::endl;
+        //std::cout << node->toString() << std::endl;
         std::string msg = "missing parameter " + params[params.size() - i - 1].get_name() + " on call to " + f->get_name();
         show_error(semantic, node->loc, msg, stack);
     }
 
     if (!finished && !(params.size() == 0 && n == nullptr)) {
-        std::cout << node->toString() << std::endl;
+        //std::cout << node->toString() << std::endl;
         show_error(
             semantic,
             node->loc,

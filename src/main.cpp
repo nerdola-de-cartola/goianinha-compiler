@@ -36,7 +36,7 @@ int main(int argc, char* argv[]) {
 
     auto code = generate_code(ast);
 
-    //print_code(code);
+    print_code(code);
     run_code(code);
 
     // Cleanup
